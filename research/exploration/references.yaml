@@ -1,0 +1,54 @@
+references:
+  - key: chan-2019-lenia
+    title: "Lenia — Biology of Artificial Life"
+    authors: "Chan, B. W.-C."
+    year: 2019
+    url: "https://arxiv.org/abs/1812.05433"
+    type: paper
+    finding: "Continuous-state/space/time cellular automaton; canonical Orbium glider; 400+ self-organized 'species' in 18 families using bell-shaped kernels and polynomial growth functions. ISAL Outstanding Paper 2019."
+    cited_by: [explore]
+
+  - key: chan-2020-expanded-universe
+    title: "Lenia and Expanded Universe"
+    authors: "Chan, B. W.-C."
+    year: 2020
+    url: "https://arxiv.org/abs/2005.03742"
+    type: paper
+    finding: "Extends Lenia to higher dimensions, multiple channels, and richer kernels; introduces taxonomic hierarchy and parameter-space cartography."
+    cited_by: [explore]
+
+  - key: kumar-2024-asal
+    title: "Automating the Search for Artificial Life with Foundation Models"
+    authors: "Kumar, A., Lu, C., Kirsch, L., Tang, Y., Stanley, K. O., Isola, P., Ha, D."
+    year: 2024
+    url: "https://arxiv.org/abs/2412.17799"
+    type: paper
+    finding: "Uses CLIP embeddings as judges to make qualitative ALife phenomena quantitative. Three objectives (supervised target, open-endedness, illumination); three search strategies (Sep-CMA-ES, custom GA, brute force). Supports 7 substrates including Lenia, Particle Lenia, Boids, Particle Life."
+    cited_by: [explore]
+
+  - key: davis-2022-glaberish
+    title: "Glaberish: Generalizing the Continuously-Valued Lenia Framework to Arbitrary Composition Rules"
+    authors: "Davis, Q. T., Bongard, J."
+    year: 2022
+    url: "https://arxiv.org/abs/2205.10463"
+    type: paper
+    finding: "Generalizes Lenia by decoupling kernel from growth function and allowing arbitrary composition; reveals new families of life-like patterns outside the original Lenia search space."
+    cited_by: [explore]
+
+  - key: kojima-2022-existence
+    title: "Existence of Life in Lenia"
+    authors: "Kojima, H., Ikegami, T."
+    year: 2022
+    url: "https://arxiv.org/abs/2203.14390"
+    type: paper
+    finding: "Formal study of soliton stability and parameter-space invariance for Lenia species; establishes conditions under which a creature persists under rule perturbation."
+    cited_by: [explore]
+
+  - key: chakazul-lenia-repo
+    title: "Chakazul/Lenia (reference implementation and animals.json)"
+    authors: "Chan, B. W.-C."
+    year: 2025
+    url: "https://github.com/Chakazul/Lenia"
+    type: software
+    finding: "Reference Python implementation, RLE-encoded creature library (animals.json, animals3D.json), kernel/growth dispatch tables (kn ∈ {1..4}, gn ∈ {1..3}). Source for the canonical Orbium parameters and cells used by lenia-baseline."
+    cited_by: [explore]

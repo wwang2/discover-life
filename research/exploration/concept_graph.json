@@ -1,0 +1,155 @@
+{
+  "nodes": [
+    {
+      "id": "chan-2019-lenia",
+      "type": "paper",
+      "label": "Lenia — Biology of Artificial Life",
+      "year": 2019,
+      "url": "https://arxiv.org/abs/1812.05433",
+      "authors": "Chan",
+      "summary": "Founding paper. Continuous CA with bell kernel + polynomial growth; 400+ self-organized solitons.",
+      "cluster": "lenia-core",
+      "relevance": 1.0,
+      "intent_relevance": 1.0,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "chan-2020-expanded-universe",
+      "type": "paper",
+      "label": "Lenia and Expanded Universe",
+      "year": 2020,
+      "url": "https://arxiv.org/abs/2005.03742",
+      "authors": "Chan",
+      "summary": "Extends Lenia to higher dimensions, multiple channels, richer kernels.",
+      "cluster": "lenia-core",
+      "relevance": 0.8,
+      "intent_relevance": 0.7,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "kumar-2024-asal",
+      "type": "paper",
+      "label": "Automating the Search for Artificial Life with Foundation Models (ASAL)",
+      "year": 2024,
+      "url": "https://arxiv.org/abs/2412.17799",
+      "authors": "Kumar, Lu, Kirsch, Tang, Stanley, Isola, Ha (Sakana AI)",
+      "summary": "CLIP-judge-based ALife search. 3 objectives × 3 algorithms × 7 substrates including Lenia.",
+      "cluster": "asal-search",
+      "relevance": 1.0,
+      "intent_relevance": 1.0,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "davis-2022-glaberish",
+      "type": "paper",
+      "label": "Glaberish: generalizing Lenia composition rules",
+      "year": 2022,
+      "url": "https://arxiv.org/abs/2205.10463",
+      "authors": "Davis, Bongard",
+      "summary": "Decouples kernel from growth; new families outside Lenia's search space.",
+      "cluster": "lenia-core",
+      "relevance": 0.7,
+      "intent_relevance": 0.6,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "kojima-2022-existence",
+      "type": "paper",
+      "label": "Existence of Life in Lenia",
+      "year": 2022,
+      "url": "https://arxiv.org/abs/2203.14390",
+      "authors": "Kojima, Ikegami",
+      "summary": "Soliton stability and parameter-space invariance — conditions for creature persistence under perturbation.",
+      "cluster": "metrics",
+      "relevance": 0.75,
+      "intent_relevance": 0.8,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "method-orbium",
+      "type": "concept",
+      "label": "Orbium (canonical Lenia glider)",
+      "year": 2019,
+      "summary": "Continuous analog of Game-of-Life glider. R=13, T=10, μ=0.15, σ=0.015, polynomial K and G. Reproduced in lenia-baseline.",
+      "cluster": "lenia-core",
+      "relevance": 0.9,
+      "intent_relevance": 0.9,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "method-sep-cma-es",
+      "type": "method",
+      "label": "Sep-CMA-ES",
+      "summary": "Separable Covariance Matrix Adaptation Evolution Strategy — ASAL's optimizer for supervised + open-endedness objectives in continuous rule space.",
+      "cluster": "asal-search",
+      "relevance": 0.85,
+      "intent_relevance": 0.7,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "method-clip-judge",
+      "type": "method",
+      "label": "CLIP embedding as ALife judge",
+      "summary": "ASAL's core idea: foundation-model embedding turns qualitative 'is this lifelike?' into a differentiable scalar via cosine sim to text prompts or temporal-novelty.",
+      "cluster": "metrics",
+      "relevance": 0.95,
+      "intent_relevance": 0.85,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "question-clip-judge-gaming",
+      "type": "question",
+      "label": "Does CLIP-as-judge get gamed by adversarial textures?",
+      "summary": "Open question: ASAL's open-endedness metric maximizes embedding diversity. If a simulation produces visually high-entropy but biologically uninteresting patterns, CLIP may reward it. Worth a controlled test.",
+      "cluster": "metrics",
+      "relevance": 0.8,
+      "intent_relevance": 0.85,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "gap-non-fm-metric",
+      "type": "gap",
+      "label": "Foundation-model-free lifelikeness metric",
+      "summary": "Could a metric built from physical invariants (mass quasi-conservation + locomotion + soliton persistence + bilateral structure) replace CLIP and still rediscover Orbium-class creatures? Cheaper, interpretable, less gameable.",
+      "cluster": "metrics",
+      "relevance": 0.85,
+      "intent_relevance": 0.95,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "orbit-lenia-baseline",
+      "type": "method",
+      "label": "lenia-baseline (this orbit)",
+      "summary": "Reproduces Orbium with Chan parameters; FFT toroidal convolution; mass + COM tracking. Substrate for downstream search experiments.",
+      "cluster": "lenia-core",
+      "relevance": 1.0,
+      "intent_relevance": 1.0,
+      "cited_by": ["explore"]
+    }
+  ],
+  "edges": [
+    {"source": "kumar-2024-asal", "target": "chan-2019-lenia", "relation": "applies-to", "label": "uses Lenia as one of 7 substrates"},
+    {"source": "kumar-2024-asal", "target": "method-sep-cma-es", "relation": "uses", "label": "primary optimizer"},
+    {"source": "kumar-2024-asal", "target": "method-clip-judge", "relation": "uses", "label": "evaluator"},
+    {"source": "chan-2020-expanded-universe", "target": "chan-2019-lenia", "relation": "builds-on", "label": "multichannel + higher-D"},
+    {"source": "davis-2022-glaberish", "target": "chan-2019-lenia", "relation": "builds-on", "label": "generalizes composition"},
+    {"source": "kojima-2022-existence", "target": "chan-2019-lenia", "relation": "applies-to", "label": "studies soliton stability"},
+    {"source": "method-orbium", "target": "chan-2019-lenia", "relation": "applies-to", "label": "canonical creature"},
+    {"source": "orbit-lenia-baseline", "target": "method-orbium", "relation": "implements", "label": "reproduces"},
+    {"source": "orbit-lenia-baseline", "target": "chan-2019-lenia", "relation": "implements", "label": "single-channel Lenia"},
+    {"source": "question-clip-judge-gaming", "target": "method-clip-judge", "relation": "questions", "label": "gaming risk"},
+    {"source": "gap-non-fm-metric", "target": "method-clip-judge", "relation": "alternative-to", "label": "FM-free metric"},
+    {"source": "gap-non-fm-metric", "target": "kojima-2022-existence", "relation": "builds-on", "label": "uses invariant-based persistence"}
+  ],
+  "clusters": [
+    {"id": "lenia-core", "label": "Lenia foundations", "color": "#4C72B0"},
+    {"id": "asal-search", "label": "Automated ALife search", "color": "#DD8452"},
+    {"id": "metrics", "label": "Lifelikeness / behavior metrics", "color": "#55A868"}
+  ],
+  "meta": {
+    "generated_at": "2026-05-19T04:50:00",
+    "total_papers_reviewed": 5,
+    "intent_statement": "Find a sharp problem in automated discovery / characterization of artificial life in Lenia; substrate baseline reproduced; angle TBD.",
+    "intent_confidence": 0.45
+  }
+}

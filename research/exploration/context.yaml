@@ -1,0 +1,11 @@
+# Exploration steering log — append-only, hook-captured, human-approved
+# Types: prompt | taste | direction | ruling-out | open-question | steering
+
+entries:
+  - date: "2026-05-19T04:30:00"
+    type: prompt
+    content: "Explore Lenia (continuous cellular automaton) as a substrate for simulating artificial life. Anchor on SakanaAI/asal (Automated Search for Artificial Life) and the broader Lenia literature."
+
+  - date: "2026-05-19T04:35:00"
+    type: steering
+    content: "Before picking a research angle, build a working Lenia baseline + code (canonical Orbium glider) so the substrate is concrete. Direction decision deferred until the baseline is running."
