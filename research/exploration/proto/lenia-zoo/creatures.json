@@ -1,0 +1,86 @@
+{
+  "O2u": {
+    "name": "Orbium unicaudatus",
+    "code": "O2u",
+    "params": {
+      "R": 13,
+      "T": 10,
+      "b": "1",
+      "m": 0.15,
+      "s": 0.015,
+      "kn": 1,
+      "gn": 1
+    },
+    "cells": "7.MD6.qL$6.pKqEqFURpApBRAqQ$5.VqTrSsBrOpXpWpTpWpUpCrQ$4.CQrQsTsWsApITNPpGqGvL$3.IpIpWrOsGsBqXpJ4.LsFrL$A.DpKpSpJpDqOqUqSqE5.ExD$qL.pBpTT2.qCrGrVrWqM5.sTpP$.pGpWpD3.qUsMtItQtJ6.tL$.uFqGH3.pXtOuR2vFsK5.sM$.tUqL4.GuNwAwVxBwNpC4.qXpA$2.uH5.vBxGyEyMyHtW4.qIpL$2.wV5.tIyG3yOxQqW2.FqHpJ$2.tUS4.rM2yOyJyOyHtVpPMpFqNV$2.HsR4.pUxAyOxLxDxEuVrMqBqGqKJ$3.sLpE3.pEuNxHwRwGvUuLsHrCqTpR$3.TrMS2.pFsLvDvPvEuPtNsGrGqIP$4.pRqRpNpFpTrNtGtVtStGsMrNqNpF$5.pMqKqLqRrIsCsLsIrTrFqJpHE$6.RpSqJqPqVqWqRqKpRXE$8.OpBpIpJpFTK!"
+  },
+  "O2b": {
+    "name": "Orbium bicaudatus",
+    "code": "O2b",
+    "params": {
+      "R": 13,
+      "T": 10,
+      "b": "1",
+      "m": 0.15,
+      "s": 0.014,
+      "kn": 1,
+      "gn": 1
+    },
+    "cells": "13.pK$14.qV$6.VpA.MpEpKpITqV$4.BpPpNrIrEqDpWpOpLpUqNvT$4.IqRrNsPsKqHJ3.GqOuC$4.TrLsTrPrLpS6.uUD$3.SpWqNrBqLpRqPqE6.vA$2.FpTpMLpHqPqHrVsPrS5.qUqA$K.pCpRG.ErFsRsVuSuPqN4.CrR$pA.pTU3.rWuBuRvXwTwKpF4.rCH$.tPqHH3.qFvAwUwVyJyKwNL2.DqLR$.pGsGA4.vPxSyDxE2yOuHS.XqJT$2.xIE4.sCyHyOvLvRyFxCsGpVpXqGP$2.VsU4.DxQyOvVuSwDwQuBrMqSqCF$3.vG5.tEyKwVvIvKvMtVrXqTpM$4.sU4.qFvDwMvNuUuDsUrKqDO$4.qCrDJ2.pPsKuGuHtOsQrNqKpC$5.pTqTpVpNqFrJsGsKrVrDqFpFD$6.QqCqJqPqVqXqRqHpOTC$8.LWpFpEXPG!"
+  },
+  "O2p": {
+    "name": "Orbium phantasma",
+    "code": "O2p",
+    "params": {
+      "R": 13,
+      "T": 40,
+      "b": "1",
+      "m": 0.13,
+      "s": 0.009,
+      "kn": 1,
+      "gn": 1
+    },
+    "cells": "7.pJOSR2LvA$3.pJqJATrHpKpIpJpOpQvEpH$3.qPrTpHpKqAqB2ADPpRxD$3.MsLpDE.qSpW4.rGuQ$2.HpPqTpD2.rSsVpX4.sDrD$2.pGpH.qPqHWqNuJuMpG4.sK$.HpUE.qKtFqWpRsTwKuW4.qDpO$RpApM3.tVuFrGsIwHyEtB3.pEqG$qBpUpB3.rWwUvDtCuOyOxJqK2.pJpX$.uVpE4.xOyOtLsHvKxOtLpDOqBpI$2.uR4.uXyOuNsAtCvJuKrEqFqJL$2.tWqK3.sAxFvDsMsItRtVsCqUpQ$3.tDpE2.qDuGuStDsLsTsQrKqBM$3.RrRpSWpXsFtNtDsHrRqWpVS$4.SqUqSqTrLrXrQqWqCpJPA$5.DpHpXqEqCpSpHTH$7.AGIHDA!"
+  },
+  "OG2g": {
+    "name": "Gyrorbium gyrans",
+    "code": "OG2g",
+    "params": {
+      "R": 13,
+      "T": 10,
+      "b": "1",
+      "m": 0.156,
+      "s": 0.0224,
+      "kn": 1,
+      "gn": 1
+    },
+    "cells": "10.EL2QLE$7.TpU2qHqCpXpUpNpFL$4.JrVtTuKuPuKtLrXqTqHqCpPpDG$3.qWtDqRpKqEsMuXvBtGrApXpUpSpIO$2.rQrN4.pAuAvRtTrIpUpIpKpFO$.pSsM6.tJwFuNsPsFrVpPpDL$.uFB6.tJ2yO2yLyOyDsKL$pDuC6.pFxW3yOwIwD2xPqH$rNtV5.EsMxCyIyOwXtJsMtJwFuX$sHuSV3.EpDvOwFxEwQsRqR2qHsFvWE$rQvJsWpPQpKpSqCvEvBuCpD3.BpDtGrQ$pXuKvMuPtLsWsCrIuCtBrS6.qWrQ$EsKvEwXyBwLtVrVsCrDqH6.pXrG$.qHtVxJyOwQrQpNqJpPV6.qJqE$.JsUxMyOrX10.pFqRJ$2.rQxPwIpI9.pKqJT$2.qJxEuPpKB7.qCpP$2.EvOvMpPO5.TrGqH$3.sCyOqEpIOEBOqHqEsRtG$4.xMsMqJqCpXqJqRpIqOuCtBsF$5.xPrAqTqMpSE.rSsMrLqRqHV.TpS$6.vErDE2.VpPB$7.pIrNqHpKQ!"
+  },
+  "OV2u": {
+    "name": "Vagorbium undulatus",
+    "code": "OV2u",
+    "params": {
+      "R": 20,
+      "T": 10,
+      "b": "1",
+      "m": 0.2,
+      "s": 0.031,
+      "kn": 1,
+      "gn": 1
+    },
+    "cells": "17.DWqD2qUqES$7.D2FDCBCHqGsTvBwQxL2xSxOwWvJsSpC$5.DJOQPNMPqWtQwHyAyHxLwAuSuGuTwBxLxXwNtAO$4.FQpB2pGpEpDqLsSvJxOyOxXvGrRR3.NrNvDxQxPuXqP$3.ESpJpSpXpWqCrMtOvRxWyOxWuOpV6.CpHtWxCxPvIrM$3.PpMqEqNqQqXsBtQvKxJ2yOvWqW8.GpXuNxFxBuWrJ$2.HpIqIrArIrPsJtLuQwGxWyOyHuHL9.XsPwExEwEtWqU$2.UqCrDrSsCsQtItXuWwIyDyOyDtK10.PsIvTwXwKuSsPqC$.GpMqUrTsJsUtItOtWuOwFyHyOyJtF10.LtIwMxAwDuUtFrHpJ$.PqErMsJsWtKtOtKtNuIwAyN2yOtVpF9.pRvKxRxCvPuFsUrOqIpCJ$.pBqRrXsStHtOtL2tEuDwE3yOvIrHpKK7.sKxWyOwUuStDrWrDqLpTpGR$DpLrCsHtAtJtMtGsXtDuHwR2yOyHwAsSqUpPO3.DqGpKvH2yOwCtMrSqQqEqApXpUpMJ$GpQrHsJsXtHtItBtAtMvByC2yOyAvHsNrFqBU3.qVrStD2yOyNvEsGqLpKpApFpQqCqApA$HpSrGsGsSsXtBsXtHuHwJ3yOxOuGrRqQpXQ2.qLqWsCwC2yOyIwTuVqXJ.JpEqAqFpI$HpPrArVsHsKsRtCtXvN4yOxCsGqJpTpOP.pRqAqPsAwW2yOyCwIvDuKqI2.PpUqDpJ$FpIqLrFrNrSsHtHuVxX4yOtGpQXSQRUpBpJpUrJxQ2yOxTwDvBuQtAW.HpMpUpC$CVpTqJqPqUrStNwA4yOuA6.BEISqExH2yOxPwDvEuUuBqW.BpCpHM$.KpApJpNpRrAtPyI3yOuHS10.WvQyOyNxNwHvLuTtQrO2.MN$.CJ2NMqAtQ3yOuVrMR11.pIsDvGvOvBuOuCtGrJ$2.A2CANtR2yOxQsQrHX10.CpPrJrWrXtE2tSsXqV$7.uIyLyOtLsKrIpJ10.LpUqWrErBrLsUtKsSqG$7.uCyAyMsUsIrMqCK9.TqAqP2qOqVrVsUsJpM$7.sNxExLsMsErTqSpHE7.KpJqEqJqGqEqNrHsBrMN$7.qBvUvJ3rVrJqKpEH5.IpApTqFqDpXpWqEqSrCqH$8.uBtJqPrBrNrQrHqMpNRKIKRpHpTqEqCpTpOpNpUqEqCR$8.rUrLOpNqHrCrMrLrAqKpWpRpSpWqGqEqCpRpLpHpG2pJS$8.pApW2.FpFqEqWrHrGrDqVqRqMqFpXpNpFXUSRI$9.P5.HpEpQ2qCpVpNpEVPJDC$19.B$17.CUS$16.OpOpSpXqD$17.GJLPS!"
+  },
+  "O4s": {
+    "name": "Synorbium solidus",
+    "code": "O4s",
+    "params": {
+      "R": 13,
+      "T": 10,
+      "b": "1",
+      "m": 0.122,
+      "s": 0.0106,
+      "kn": 1,
+      "gn": 1
+    },
+    "cells": "23.OTVM.qF$18.qHK.pCpDpLpIpApJpRXqN$18.qHsGpKqGqMX4.pLsO$18.OtUsLqLqHA5.RwN$19.uEvVrJRO6.LrS$17.KpHrFwGsV.pBpS6.uC$13.AIVpDpIpPpMsXuLqIqCsHqQ6.rU$12.GpBpKpAUNE2.tCuArUtOuApO5.rI$6.pV4.GpBpAE6.rWvGtUtDwBvOG4.pQpG$6.sDrJ2.IpEpA9.vRwOtWvBxVvF4.pEpR$4.AGrFuEsKWpKpH10.uJyHvEtKwSyOtK3.pFpQ$4.DqDqOuLvPpWpMI10.GyOwUsFtFxKxErPWVpTpI$3.QpIqQqAsDwDtSN12.vNyOtWsTuVwNtXqWqBqFR$2.VpKpAUWpAsEtWG12.pNxLwGuCuFuWtVrTqTpUC$.CpKN2.TEpJuCsV13.tIvVuWtXtLsPrNqLV$.OpC3.pDrCpXsPvCsL12.qLtOtTtAsErLqNpIC$VUT4.rVsHsJwEwOX11.pQrOsCrPqVqFpGH$pLpBQ4.sGuRtNvFyOyD10.TpXqOqRqGpMTE$.uCU4.PvHwFuTwDyOvE7.BpApMpRpLpBOF$.qDpQ5.uPyKuSsPwByJrH5.RpIpANA$2.wF5.qUyOwAsGtKwMuXpQ2.LpEpAC$2.qQA5.xFxOtLtCuUvCsEqEpSpRW$3.uE5.tBxBvBtOtUtVsLrCqFV$3.MrG4.qMuRuVtStBsMrNqLpD$4.pXqKE.CpXsLtJsPrTrBqFpDB$5.pHqKpWpSqLrHrOrDqKpPTB$6.DpKpVqFqGqApMXJ$9.EHGC!"
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "O2u": {
+    "name": "Orbium unicaudatus",
+    "params": {
+      "R": 13,
+      "T": 10,
+      "b": "1",
+      "m": 0.15,
+      "s": 0.015,
+      "kn": 1,
+      "gn": 1
+    },
+    "metrics": {
+      "mass_cv": 0.003045530695400314,
+      "speed": 6.237604854602571,
+      "footprint": 169.70760233918128,
+      "symmetry": 0.6912350596849466,
+      "persistent": true,
+      "final_mass_frac": 0.9602590062075524
+    }
+  },
+  "O2b": {
+    "name": "Orbium bicaudatus",
+    "params": {
+      "R": 13,
+      "T": 10,
+      "b": "1",
+      "m": 0.15,
+      "s": 0.014,
+      "kn": 1,
+      "gn": 1
+    },
+    "metrics": {
+      "mass_cv": 0.002220679069384065,
+      "speed": 6.036353533843699,
+      "footprint": 166.08771929824562,
+      "symmetry": 0.6560237727293945,
+      "persistent": true,
+      "final_mass_frac": 0.9990621106161428
+    }
+  },
+  "OG2g": {
+    "name": "Gyrorbium gyrans",
+    "params": {
+      "R": 13,
+      "T": 10,
+      "b": "1",
+      "m": 0.156,
+      "s": 0.0224,
+      "kn": 1,
+      "gn": 1
+    },
+    "metrics": {
+      "mass_cv": 0.025139351986871752,
+      "speed": 0.5219577089443479,
+      "footprint": 219.70760233918128,
+      "symmetry": 0.5907554632151149,
+      "persistent": true,
+      "final_mass_frac": 0.9900175143003059
+    }
+  },
+  "O4s": {
+    "name": "Synorbium solidus",
+    "params": {
+      "R": 13,
+      "T": 10,
+      "b": "1",
+      "m": 0.122,
+      "s": 0.0106,
+      "kn": 1,
+      "gn": 1
+    },
+    "metrics": {
+      "mass_cv": 0.0041977279927862335,
+      "speed": 6.404461230732311,
+      "footprint": 275.1169590643275,
+      "symmetry": 0.30790640685420684,
+      "persistent": true,
+      "final_mass_frac": 1.001089575130124
+    }
+  },
+  "OV2u": {
+    "name": "Vagorbium undulatus",
+    "params": {
+      "R": 20,
+      "T": 10,
+      "b": "1",
+      "m": 0.2,
+      "s": 0.031,
+      "kn": 1,
+      "gn": 1
+    },
+    "metrics": {
+      "mass_cv": 0.024638015374705474,
+      "speed": 5.880358168978293,
+      "footprint": 613.8479532163743,
+      "symmetry": 0.7108414872613019,
+      "persistent": true,
+      "final_mass_frac": 1.1065895910981198
+    }
+  },
+  "O2p": {
+    "name": "Orbium phantasma",
+    "params": {
+      "R": 13,
+      "T": 40,
+      "b": "1",
+      "m": 0.13,
+      "s": 0.009,
+      "kn": 1,
+      "gn": 1
+    },
+    "metrics": {
+      "mass_cv": 0.005469404566570768,
+      "speed": 6.174775085304794,
+      "footprint": 143.87654320987653,
+      "symmetry": 0.6581480278805081,
+      "persistent": true,
+      "final_mass_frac": 1.0084554918079238
+    }
+  }
+}
