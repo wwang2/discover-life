@@ -35,14 +35,18 @@ from lenia import (  # noqa: E402
     mass_cv,
     locomotion_speed,
     footprint_area,
-    bilateral_symmetry,
+    dihedral_symmetry,
+    temporal_complexity,
     persistent,
+    synthetic_static_blob_sim,
 )
 
 CREATURES = json.loads((HERE / "creatures.json").read_text())
 # Stable display order, picked to span behavior modes (translate / rotate /
-# 4-fold-symmetric / undulate / two-tailed / slow-dynamics).
-ORDER = ["O2u", "O2b", "OG2g", "O4s", "OV2u", "O2p"]
+# 4-fold-symmetric / undulate / two-tailed / slow-dynamics). The "STATIC"
+# entry is a synthetic negative control — a Gaussian blob that never changes,
+# used to verify the temporal-complexity leg of the diagnostic vector.
+ORDER = ["O2u", "O2b", "OG2g", "O4s", "OV2u", "O2p", "STATIC"]
 
 
 # ---------------------------------------------------------------------------
@@ -70,12 +74,13 @@ plt.rcParams.update({
 
 # One color per creature, reused across all overlay panels.
 PALETTE = {
-    "O2u":  "#4C72B0",  # blue
-    "O2b":  "#DD8452",  # orange
-    "OG2g": "#55A868",  # green
-    "O4s":  "#C44E52",  # red
-    "OV2u": "#8172B3",  # purple
-    "O2p":  "#937860",  # brown
+    "O2u":    "#4C72B0",  # blue
+    "O2b":    "#DD8452",  # orange
+    "OG2g":   "#55A868",  # green
+    "O4s":    "#C44E52",  # red
+    "OV2u":   "#8172B3",  # purple
+    "O2p":    "#937860",  # brown
+    "STATIC": "#BBBBBB",  # gray — negative control
 }
 
 
@@ -90,36 +95,50 @@ LENIA_TIME = 20.0  # how many Lenia time units to simulate per creature
 def run_zoo() -> dict:
     results: dict = {}
     for code in ORDER:
-        cre = CREATURES[code]
-        T = cre["params"]["T"]
-        steps = int(round(LENIA_TIME * T))
-        # store every Nth frame so all creatures have ~200 frames regardless of T
-        keep_every = max(1, steps // 200)
-        t0 = time.time()
-        sim = run_simulation(cre, steps=steps, world_size=WORLD, keep_every=keep_every)
-        elapsed = time.time() - t0
+        if code == "STATIC":
+            name = "static blob (negative control)"
+            T = 10
+            params = {"R": 0, "T": T, "m": 0.0, "s": 0.0}
+            sim = synthetic_static_blob_sim(target_mass=75.0, sigma=6.0, world_size=WORLD, steps=200, T=T)
+            steps = 200
+            keep_every = 1
+            elapsed = 0.0
+            t0 = time.time()
+        else:
+            cre = CREATURES[code]
+            name = cre["name"]
+            params = cre["params"]
+            T = params["T"]
+            steps = int(round(LENIA_TIME * T))
+            keep_every = max(1, steps // 200)
+            t0 = time.time()
+            sim = run_simulation(cre, steps=steps, world_size=WORLD, keep_every=keep_every)
+            elapsed = time.time() - t0
 
+        # Per-frame diagnostics
         area_t = np.array([(f > 0.1).sum() for f in sim.frames])
-        sym_t = np.array([bilateral_symmetry(f) for f in sim.frames])
+        sym_t = np.array([dihedral_symmetry(f) for f in sim.frames])
 
+        skip_t = int(3 * T)
         results[code] = {
-            "name": cre["name"],
-            "params": cre["params"],
+            "name": name,
+            "params": params,
             "sim": sim,
             "area_t": area_t,
             "sym_t": sym_t,
             "metrics": {
-                "mass_cv": mass_cv(sim.mass, skip=int(3 * T)),
-                "speed": locomotion_speed(sim.com_y, sim.com_x, T, skip=int(3 * T)),
-                "footprint": float(area_t[int(3 * T):].mean()) if len(area_t) > 3 * T else float(area_t.mean()),
-                "symmetry": float(sym_t[int(3 * T):].mean()) if len(sym_t) > 3 * T else float(sym_t.mean()),
-                "persistent": persistent(sim.mass),
+                "mass_cv":     mass_cv(sim.mass, skip=skip_t),
+                "speed":       locomotion_speed(sim.com_y, sim.com_x, T, skip=skip_t),
+                "footprint":   float(area_t[skip_t:].mean()) if len(area_t) > skip_t else float(area_t.mean()),
+                "symmetry":    float(sym_t[skip_t:].mean()) if len(sym_t) > skip_t else float(sym_t.mean()),
+                "temporal":    temporal_complexity(sim.frames, sim.com_y, sim.com_x, WORLD, skip=skip_t),
+                "persistent":  persistent(sim.mass),
                 "final_mass_frac": float(sim.mass[-1] / sim.mass[0]) if sim.mass[0] > 0 else 0.0,
             },
         }
-        print(f"  {code:5s} {cre['name']:30s} steps={steps:4d} keep={keep_every} elapsed={elapsed:.2f}s "
-              f"mass-CV={results[code]['metrics']['mass_cv']:.3f} "
-              f"speed={results[code]['metrics']['speed']:.2f} px/u")
+        m = results[code]["metrics"]
+        print(f"  {code:6s} {name[:32]:32s} steps={steps:4d} keep={keep_every} elapsed={elapsed:.2f}s  "
+              f"sym={m['symmetry']:.3f} temp={m['temporal']:.4f}")
     return results
 
 
@@ -130,7 +149,7 @@ def run_zoo() -> dict:
 def make_zoo_figure(results: dict, path: Path) -> None:
     fig = plt.figure(figsize=(15, 11), constrained_layout=True)
     gs = gridspec.GridSpec(
-        4, 6, figure=fig,
+        4, 7, figure=fig,
         height_ratios=[1.1, 1.0, 1.0, 0.9],
     )
 
@@ -153,8 +172,8 @@ def make_zoo_figure(results: dict, path: Path) -> None:
             spine.set_color(PALETTE[code])
             spine.set_linewidth(2.0)
 
-    # Row 1 left half (cols 0–2): mass(t) overlay
-    ax_m = fig.add_subplot(gs[1, 0:3])
+    # Row 1 left half (cols 0–3): mass(t) overlay
+    ax_m = fig.add_subplot(gs[1, 0:4])
     for code in ORDER:
         sim = results[code]["sim"]
         t = np.arange(len(sim.mass)) / sim.params["T"]
@@ -167,8 +186,8 @@ def make_zoo_figure(results: dict, path: Path) -> None:
     ax_m.legend(loc="upper right", ncol=3, fontsize=9)
     ax_m.set_ylim(0.0, 1.4)
 
-    # Row 1 right half (cols 3–5): COM trajectories
-    ax_c = fig.add_subplot(gs[1, 3:6])
+    # Row 1 right half (cols 4–6): COM trajectories
+    ax_c = fig.add_subplot(gs[1, 4:7])
     for code in ORDER:
         sim = results[code]["sim"]
         # Re-zero so all trajectories start at (0,0) — easier to compare
@@ -184,8 +203,8 @@ def make_zoo_figure(results: dict, path: Path) -> None:
     ax_c.axvline(0, color="#888888", lw=0.4, linestyle=":")
     ax_c.set_aspect("equal", adjustable="datalim")
 
-    # Row 2 left (cols 0–2): footprint area(t)
-    ax_a = fig.add_subplot(gs[2, 0:3])
+    # Row 2 left (cols 0–3): footprint area(t)
+    ax_a = fig.add_subplot(gs[2, 0:4])
     for code in ORDER:
         sim = results[code]["sim"]
         t = np.linspace(0, len(sim.mass) / sim.params["T"], len(results[code]["area_t"]))
@@ -195,34 +214,28 @@ def make_zoo_figure(results: dict, path: Path) -> None:
     ax_a.set_title("(i) footprint area (size & breathing)")
     ax_a.legend(loc="best", ncol=3, fontsize=9)
 
-    # Row 2 right (cols 3–5): bilateral symmetry(t)
-    ax_s = fig.add_subplot(gs[2, 3:6])
+    # Row 2 right (cols 4–6): dihedral symmetry(t)
+    ax_s = fig.add_subplot(gs[2, 4:7])
     for code in ORDER:
         sim = results[code]["sim"]
         t = np.linspace(0, len(sim.mass) / sim.params["T"], len(results[code]["sym_t"]))
         ax_s.plot(t, results[code]["sym_t"], color=PALETTE[code], lw=1.5, label=code, alpha=0.85)
     ax_s.set_xlabel("time (Lenia units)")
-    ax_s.set_ylabel("reflection self-corr.")
-    ax_s.set_title("(j) bilateral / vertical symmetry (max of H, V)")
-    ax_s.legend(loc="best", ncol=3, fontsize=9)
+    ax_s.set_ylabel("dihedral self-corr.")
+    ax_s.set_title("(j) dihedral symmetry (max over reflection axes + rotation orders)")
+    ax_s.legend(loc="best", ncol=4, fontsize=9)
     ax_s.set_ylim(0.0, 1.0)
 
-    # Row 3 — summary bar charts: speed, mass-CV, footprint, symmetry
+    # Row 3 — five summary bar charts: speed, mass-CV, footprint, symmetry, temporal
     metric_panels = [
-        ("speed", "(k) locomotion speed (px / Lenia unit)", False),
-        ("mass_cv", "(l) mass-CV   ← lower = more conserved", True),
-        ("footprint", "(m) footprint area (mean px)", False),
-        ("symmetry", "(n) symmetry score (mean)", False),
+        ("speed",     "(k) speed (px / u)"),
+        ("mass_cv",   "(l) mass-CV   ← lower = conserved"),
+        ("footprint", "(m) footprint (mean px)"),
+        ("symmetry",  "(n) dihedral symmetry (mean)"),
+        ("temporal",  "(o) temporal complexity"),
     ]
-    # 4 bar charts spanning 1.5 cols each — use 6/4 = 1.5 cols per chart
-    spans = [(0, 1), (1, 2), (3, 4), (4, 5)]
-    # Actually use 6 cols, 4 charts, 1.5 each — but GridSpec needs integer slots.
-    # Simpler: use gs[3, 0:2], [3, 2:3], [3, 3:5], [3, 5:6]? No — 4 even slots: 0:2, 2:3, 3:5, 5:6 isn't even.
-    # Cleanest: 4 charts × 1.5 cols → fall back to 4 cols by re-doing the gridspec? No.
-    # Use 4 narrower panels: cols 0-1, 2, 3-4, 5 (mixed) → ugly.
-    # → Just split row 3 into 4 equal subpanels using a sub-gridspec.
-    sub_gs = gs[3, :].subgridspec(1, 4, wspace=0.4)
-    for i, (key, title, _lower_better) in enumerate(metric_panels):
+    sub_gs = gs[3, :].subgridspec(1, len(metric_panels), wspace=0.4)
+    for i, (key, title) in enumerate(metric_panels):
         ax_b = fig.add_subplot(sub_gs[0, i])
         vals = [results[code]["metrics"][key] for code in ORDER]
         bars = ax_b.bar(
@@ -264,12 +277,12 @@ if __name__ == "__main__":
     results = run_zoo()
 
     print("\n[lenia-zoo] summary metrics:")
-    print(f"  {'code':5s} {'name':28s}  {'mass_cv':>8s}  {'speed':>7s}  {'footprint':>10s}  {'symm':>6s}  persistent")
+    print(f"  {'code':6s} {'name':32s}  {'mass_cv':>8s}  {'speed':>7s}  {'footprint':>10s}  {'symm':>6s}  {'temp':>8s}  persistent")
     for code in ORDER:
         m = results[code]["metrics"]
-        print(f"  {code:5s} {results[code]['name'][:28]:28s}  "
+        print(f"  {code:6s} {results[code]['name'][:32]:32s}  "
               f"{m['mass_cv']:8.4f}  {m['speed']:7.3f}  {m['footprint']:10.1f}  "
-              f"{m['symmetry']:6.3f}  {str(m['persistent']):>10s}")
+              f"{m['symmetry']:6.3f}  {m['temporal']:8.4f}  {str(m['persistent']):>10s}")
 
     # Persist a slim summary for the report / concept graph
     summary = {

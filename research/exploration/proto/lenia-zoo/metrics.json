@@ -14,7 +14,8 @@
       "mass_cv": 0.003045530695400314,
       "speed": 6.237604854602571,
       "footprint": 169.70760233918128,
-      "symmetry": 0.6912350596849466,
+      "symmetry": 0.8535898394654591,
+      "temporal": 0.0007435699045493235,
       "persistent": true,
       "final_mass_frac": 0.9602590062075524
     }
@@ -34,7 +35,8 @@
       "mass_cv": 0.002220679069384065,
       "speed": 6.036353533843699,
       "footprint": 166.08771929824562,
-      "symmetry": 0.6560237727293945,
+      "symmetry": 0.8862720755900518,
+      "temporal": 0.0007241406591542567,
       "persistent": true,
       "final_mass_frac": 0.9990621106161428
     }
@@ -54,7 +56,8 @@
       "mass_cv": 0.025139351986871752,
       "speed": 0.5219577089443479,
       "footprint": 219.70760233918128,
-      "symmetry": 0.5907554632151149,
+      "symmetry": 0.7311449234528972,
+      "temporal": 0.004475363781228086,
       "persistent": true,
       "final_mass_frac": 0.9900175143003059
     }
@@ -74,7 +77,8 @@
       "mass_cv": 0.0041977279927862335,
       "speed": 6.404461230732311,
       "footprint": 275.1169590643275,
-      "symmetry": 0.30790640685420684,
+      "symmetry": 0.7773693300691945,
+      "temporal": 0.0013120422866179774,
       "persistent": true,
       "final_mass_frac": 1.001089575130124
     }
@@ -94,7 +98,8 @@
       "mass_cv": 0.024638015374705474,
       "speed": 5.880358168978293,
       "footprint": 613.8479532163743,
-      "symmetry": 0.7108414872613019,
+      "symmetry": 0.7236600525973765,
+      "temporal": 0.010472121408327708,
       "persistent": true,
       "final_mass_frac": 1.1065895910981198
     }
@@ -114,9 +119,28 @@
       "mass_cv": 0.005469404566570768,
       "speed": 6.174775085304794,
       "footprint": 143.87654320987653,
-      "symmetry": 0.6581480278805081,
+      "symmetry": 0.810335611061704,
+      "temporal": 0.0009880494493836717,
       "persistent": true,
       "final_mass_frac": 1.0084554918079238
+    }
+  },
+  "STATIC": {
+    "name": "static blob (negative control)",
+    "params": {
+      "R": 0,
+      "T": 10,
+      "m": 0.0,
+      "s": 0.0
+    },
+    "metrics": {
+      "mass_cv": 0.0,
+      "speed": 0.0,
+      "footprint": 277.0,
+      "symmetry": 1.0,
+      "temporal": 6.212238834998979e-18,
+      "persistent": true,
+      "final_mass_frac": 1.0
     }
   }
 }

@@ -1,44 +1,51 @@
-# Lenia zoo — six species, five behavior diagnostics
+# Lenia zoo — seven species (incl. negative control), five behavior diagnostics
 
-Ran six Chan-2019 creatures (Orbium *unicaudatus*, *bicaudatus*, *phantasma*, Gyrorbium *gyrans*, Synorbium *solidus*, Vagorbium *undulatus*) on a 160×160 toroidal grid for ~20 Lenia time units each through the same simulator that produced the baseline.
-All six persisted; mass-CV stayed under 2.5% in every case, the rotator (Gyrorbium) is cleanly distinguished by speed 0.52 vs ~6 px/u for translators, and Vagorbium's footprint (614 px) is 3–4× larger than the rest — so a five-dim vector `(mass_cv, speed, footprint, symmetry, persistent)` already separates the canonical behavior modes without any foundation-model judge in the loop.
-This supports the leading research direction: build a foundation-model-free lifelikeness metric on top of these diagnostics and run `/init` against it.
+Ran six Chan-2019 creatures plus one synthetic negative control (a static Gaussian blob with the same mass as Orbium) through the same simulator and through a five-metric diagnostic vector `(mass_cv, locomotion_speed, footprint, dihedral_symmetry, temporal_complexity)`.
+After this round both gaps from the first pass are closed: Synorbium's symmetry score jumped from 0.31 to **0.78** with the rotation-aware metric, and the static blob now fails on `temporal_complexity = 0.0000` against `≥ 0.0007` for every real creature.
+The diagnostic vector is now a defensible candidate for the foundation-model-free evaluator we'd commit to in `/init`.
 
 ![results](figures/results.png)
 
-## What each panel shows
-
-- **(a–f)** Final-frame snapshot per creature with its params. Panel border is colored — same color used in every overlay panel below.
-- **(g)** Mass over time, normalized to initial mass. All six creatures hold at ratio 1.0 ± a few percent after a brief settling transient.
-- **(h)** Unwrapped center-of-mass trajectories from each creature's start. Translators trace straight lines; Gyrorbium (green) traces a tight closed loop near the origin — it rotates rather than translates. Vagorbium (purple) shows the snake-like undulation in its trajectory.
-- **(i)** Footprint area `#{A > 0.1}` over time. Vagorbium ~614 px (large), Synorbium ~275, others ~150–220. Time-series captures "breathing" — Gyrorbium and Vagorbium oscillate; Orbiums are flat.
-- **(j)** Best-axis reflection self-correlation. Synorbium is the outlier at ~0.30 — but it has D4 symmetry, not just H/V, and rotates during the run, so my bilateral-only metric undersells it (open question; the rotational-aware version would be a small extension).
-- **(k–n)** Summary bar charts: speed, mass-CV, footprint, symmetry — the five-number signature per creature.
-
 ## Summary metrics
 
-| code | name | mass_cv | speed (px/u) | footprint (px) | symmetry | persistent |
-|------|------|--------:|-------------:|---------------:|---------:|-----------:|
-| O2u  | Orbium unicaudatus  | 0.003 | 6.24 | 170 | 0.69 | ✓ |
-| O2b  | Orbium bicaudatus   | 0.002 | 6.04 | 166 | 0.66 | ✓ |
-| OG2g | Gyrorbium gyrans    | 0.025 | 0.52 | 220 | 0.59 | ✓ |
-| O4s  | Synorbium solidus   | 0.004 | 6.40 | 275 | 0.31 | ✓ |
-| OV2u | Vagorbium undulatus | 0.025 | 5.88 | 614 | 0.71 | ✓ |
-| O2p  | Orbium phantasma    | 0.005 | 6.17 | 144 | 0.66 | ✓ |
+| code   | name                          | mass_cv | speed  | footprint | symmetry | temporal | persistent |
+|--------|-------------------------------|--------:|-------:|----------:|---------:|---------:|:----------:|
+| O2u    | Orbium unicaudatus            |   0.003 |   6.24 |       170 |    0.85  |   0.0007 |     ✓     |
+| O2b    | Orbium bicaudatus             |   0.002 |   6.04 |       166 |    0.89  |   0.0007 |     ✓     |
+| OG2g   | Gyrorbium gyrans              |   0.025 |   0.52 |       220 |    0.73  |   0.0045 |     ✓     |
+| O4s    | Synorbium solidus             |   0.004 |   6.40 |       275 |    0.78  |   0.0013 |     ✓     |
+| OV2u   | Vagorbium undulatus           |   0.025 |   5.88 |       614 |    0.72  |   0.0105 |     ✓     |
+| O2p    | Orbium phantasma              |   0.006 |   6.18 |       144 |    0.81  |   0.0010 |     ✓     |
+| STATIC | static Gaussian blob (neg.)   | **0.000** | **0.00** |   277 | **1.00** | **0.0000** |   ✓     |
 
-## Verification
+## What changed since the first zoo
 
-- Each creature was simulated for the same number of Lenia time units (20.0), not the same number of integration steps — Orbium *phantasma* runs at T=40 so it needed 800 steps; the others use 200 steps at T=10. This rules out "T inflates the budget" artefacts.
-- All five diagnostics are computed after a 3·T-step transient, so initial settling doesn't pollute the numbers.
-- The simulator is byte-identical to the one used by `proto/lenia-baseline/` (both import `from lenia import ...`). Baseline reproduced its committed numbers after the refactor (mass 76.86 → 73.81, speed 6.25), confirming the extraction was lossless.
+**Gap 1 closed — `dihedral_symmetry`.** Replaces the bilateral-only metric with a `max` over: reflection self-correlation at 8 candidate axes ∈ [0°, 180°), and rotational self-correlation at orders {2, 3, 4, 6}. `scipy.ndimage.rotate(..., order=1, reshape=False)` for the candidate transforms. Synorbium 0.31 → 0.78. All six real creatures now cluster in 0.72–0.89, consistent with their visual symmetry. Static blob = 1.0 (perfect — radially symmetric Gaussian is invariant under every reflection and rotation).
 
-## Implications for the eval metric
+**Gap 2 closed — `temporal_complexity`.** Pixel-wise std of frames *after centering each on its instantaneous COM*. The centering step is critical — without it, a fast translator like Orbium would score high simply by moving across pixels, conflating motion with internal complexity. With centering, a creature that breathes / rotates / undulates internally scores higher than one that drifts rigidly. Static blob: 0.0000 (frames are identical, std is zero everywhere). Orbium: 0.0007 (small but non-zero — the glider has slight internal oscillation). Vagorbium: 0.0105 (large breathing creature, 15× Orbium). Gyrorbium: 0.0045 (rotates in place after centering ≈ frame rotation captured by pixel-wise std). Synorbium: 0.0013, Orbium phantasma: 0.0010.
 
-The five-number vector is enough to cluster creatures into translator / rotator / large-undulator without any external evaluator. Whether the same vector — or some monotone combination of it — is enough to *drive search* (Sep-CMA-ES over rule space) toward novel Orbium-class creatures is the question we'd take into `/init`. Two known weaknesses to surface there:
+## What the figure says
 
-1. **Rotational symmetry**: my bilateral-only metric tags D4 creatures (Synorbium) as low-symmetry while they're highly symmetric in a different group. The metric should generalize to "max over all dihedral group reflections", which is a 4–8-line extension but worth doing before the eval is frozen.
-2. **Reward-hacking surface**: a static blob has mass-CV ≈ 0, footprint > 0, and symmetry → 1 — it would *pass* every per-axis threshold while being trivial. Persistence alone doesn't fix this. We need a "non-trivial" leg — most likely **temporal complexity** (variance in `(area_t, sym_t)` after transient) or **information flow** (e.g., a non-zero locomotion-mass coupling). Worth a 30-min experiment before `/init`.
+- **Row 0 (a–g)**: thumbnails with colored borders. The STATIC blob (gray border) is visually distinct from every real creature.
+- **(g) mass conservation**: STATIC is exactly flat at 1.0 (no dynamics); all real creatures hold within ~3 %.
+- **(h) COM trajectory**: STATIC is a single point at the origin (no motion); translators trace straight lines; Gyrorbium traces a tight closed loop; Vagorbium snakes diagonally.
+- **(i) footprint**: STATIC sits at 277 (constant). Vagorbium ~614 still dominates.
+- **(j) dihedral symmetry-vs-time**: STATIC is pinned at 1.0; Lenia creatures oscillate between 0.6 and 0.95 as they rotate / wobble / undulate. **Synorbium (red) shows the largest swings** — sometimes axis-aligned (high score), sometimes mid-rotation (low score) — which is the right behavior for a D4 creature.
+- **(k–o) bar charts**: the five-number signature per creature. STATIC is **passable on the first four metrics** — `mass_cv` 0, `speed` 0 (but that's fine if you don't require motion), `footprint` 277 (in the real-creature range), `symmetry` 1.0 (max). Only `temporal_complexity` rules it out. So **temporal_complexity is the load-bearing leg against trivial winners.**
 
-## Next step
+## Defensible eval matrix sketch (for `/init`)
 
-Two options before `/init`: extend the symmetry metric to the full D_n group (fixes Synorbium and lets a future search recover non-bilateral creatures), or stress-test the metric with a known-trivial pattern (static blob, expanding blob, two-creature collision) to see whether it can be fooled. Either way the substrate and diagnostics are ready.
+A pattern is "lifelike" iff **all four** hold:
+
+1. `persistent` (mass[15:].min() > 0.5 · mass[5:15].mean())
+2. `mass_cv` < 0.05  (real creatures: 0.002–0.025; the threshold leaves headroom)
+3. `temporal_complexity` > some τ (real creatures: 0.0007–0.0105; STATIC = 0)
+4. `dihedral_symmetry` > 0.6 (real creatures: 0.72–0.89; rules out noise fields)
+
+Then the **score** is some monotone combination of `speed`, `footprint` range, and `dihedral_symmetry`. The exact scalarization is what `/init` panels + the eval-adversary should crystallize.
+
+## Two follow-ups for `/init` Phase 2.2 (eval-adversary)
+
+The adversarial panel should specifically attack:
+1. **Slow-drifting smooth blob** — would it pass `temporal_complexity` with a near-zero score that still beats τ? Threshold-tuning matters here.
+2. **Two-creature collision** — if two Orbiums fuse and produce a mass-conserving rotating clump, our diagnostics would happily say "lifelike", but is that the kind of creature we want to find?

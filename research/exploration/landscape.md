@@ -1,7 +1,7 @@
 # Research Landscape: Lenia + Automated Search for Artificial Life
 
 ## Working Problem Statement
-*Drafting: "**Beat CLIP-as-judge** in ASAL-style Lenia search using a foundation-model-free lifelikeness metric — a 5-dimensional vector `(mass_cv, locomotion_speed, footprint, symmetry, persistent)` already separates Chan's canonical translator / rotator / large-undulator behavior classes on a six-creature zoo (see `proto/lenia-zoo/`). The campaign question is whether the same vector (or a monotone combination of it) is sufficient to drive Sep-CMA-ES over Lenia rule space toward novel Orbium-class creatures."*  Two known weaknesses to address before freezing the eval at `/init`: (a) the bilateral-only symmetry metric undersells D4-symmetric creatures (Synorbium scored 0.31 despite being highly symmetric); (b) a static blob trivially satisfies every diagnostic — need a non-trivial "temporal complexity" leg.
+**Beat CLIP-as-judge** in ASAL-style Lenia search with a foundation-model-free five-dim lifelikeness vector `(mass_cv, locomotion_speed, footprint, dihedral_symmetry, temporal_complexity)` that (i) cleanly classifies Chan's canonical translator / rotator / large-undulator species, (ii) cannot be gamed by a static Gaussian blob, and (iii) is computable in <1 ms per frame on CPU. The campaign question: can the same vector (or a monotone combination of it) drive Sep-CMA-ES over Lenia rule space toward novel Orbium-class creatures at comparable hit rate to CLIP-supervised ASAL, at a fraction of the per-evaluation compute? Both pre-`/init` weaknesses identified in the first zoo round have been closed — see `proto/lenia-zoo/report.md`.
 
 ## What Is Known
 - **Lenia substrate is well-defined and stable**: single-channel 2D continuous CA, bell-shaped kernel + polynomial growth, ~6 hyperparameters (R, T, μ, σ, b, kernel/growth families). Chan (2019) catalogued 400+ self-organized species in 18 families; Orbium *unicaudatus* is the canonical "glider".
@@ -14,13 +14,13 @@
 - **CLIP–text cosine similarity** (ASAL supervised) — given a text prompt, match the simulation's final-frame embedding.
 - **CLIP temporal novelty** (ASAL open-endedness) — maximize variance of frame embeddings over the trajectory.
 - **CLIP embedding coverage / illumination** (ASAL) — MAP-Elites-style diversity across embedding space.
-- *Foundation-model-free vector — implemented in `proto/lenia.py` and validated on six creatures in `proto/lenia-zoo/`:*
-  - **`mass_cv`** = `std(mass[3T:]) / mean(mass[3T:])` — coefficient of variation of total mass post-transient. Lower = better conserved. Zoo range: 0.002–0.025. ✓
-  - **`locomotion_speed`** = unwrapped COM displacement post-transient, divided by Lenia time. Zoo range: 0.5 (rotator) – 6.4 (translator). Cleanly separates translators from rotators. ✓
-  - **`footprint`** = mean `#{A > 0.1}` post-transient. Zoo range: 144–614. Separates large undulators from compact gliders. ✓
-  - **`symmetry`** = max over {horizontal, vertical} reflection self-correlation (centered on COM). Zoo range: 0.31–0.71. **Caveat:** undersells D4 creatures (Synorbium 0.31 despite being highly symmetric under the full D4 group).
-  - **`persistent`** = `mass[15:].min() > 0.5 · mean(mass[5:15])` — boolean. All six zoo creatures pass. Necessary but obviously not sufficient (a static blob also passes — see "reward-hacking surface" below).
-- *Candidate sixth leg (not yet implemented):* **temporal complexity** = variance of `(area_t, sym_t)` post-transient — rules out static blobs that game the existing five.
+- *Foundation-model-free vector — implemented in `proto/lenia.py` and validated on a 7-species zoo (6 real Lenia creatures + a synthetic static-blob negative control) in `proto/lenia-zoo/`:*
+  - **`mass_cv`** = `std(mass[3T:]) / mean(mass[3T:])`. Zoo: real 0.002–0.025, static 0.000. ✓
+  - **`locomotion_speed`** = unwrapped COM displacement post-transient / Lenia time. Zoo: real 0.5 (rotator) – 6.4 (translator), static 0.0. ✓
+  - **`footprint`** = mean `#{A > 0.1}` post-transient. Zoo: 144–614 (real), 277 (static). ✓
+  - **`dihedral_symmetry`** (replaces the earlier bilateral-only metric) = max over {8 reflection-axis candidates ∪ rotation orders {2,3,4,6}} of self-correlation after COM-centering. Zoo: real 0.72–0.89 (Synorbium 0.78, up from 0.31), static 1.00. ✓
+  - **`temporal_complexity`** = pixel-wise std of frames after centering each on its instantaneous COM. Captures *internal* dynamics only — translation alone contributes nothing. Zoo: real 0.0007–0.0105, **static 0.0000**. ✓ — load-bearing leg against trivial winners.
+- *Gate metric:* **`persistent`** = `mass[15:].min() > 0.5 · mean(mass[5:15])`. Binary; all 7 zoo entries pass (necessary but not sufficient, hence the four real-valued legs above).
 
 ## Candidate Systems
 - *Default test matrix (placeholders, to be filled at `/init` time):*
@@ -48,9 +48,8 @@
 - *None yet — too early.*
 
 ## What Changed This Round
-- **Substrate is concrete**: `proto/lenia-baseline/` reproduces Orbium; `proto/lenia.py` extracted as the shared simulator (baseline numbers reproduce byte-for-byte after the refactor).
-- **Six-creature zoo (`proto/lenia-zoo/`)**: all stable under the same simulator, five diagnostics cleanly separate translator / rotator / large-undulator modes. The foundation-model-free metric is no longer hypothetical — it works as a *classifier*. Whether it works as a *search objective* is the open question.
-- **Initial-condition decoding bug**: a hand-copied RLE string had 21 extra chars and 571 char diffs vs. ground truth, which dropped `u_mean` below the viable growth window. Lesson: bundle reference data verbatim; never re-key by hand.
-- **Symmetry metric weakness identified**: only checks H/V reflection, so D4-symmetric Synorbium scores 0.31. Need to extend to full D_n group before freezing eval — a 4-8 line fix.
-- **Reward-hacking risk identified**: static blob trivially passes mass_cv ≈ 0, footprint > 0, symmetry → 1, persistent → True. Need a "temporal complexity" leg.
-- `intent_confidence` 0.30 → 0.45 → 0.60 (substrate locked, metric prototyped on real data; specific gaps to close before `/init`).
+- **Both pre-`/init` metric gaps closed.** `dihedral_symmetry` extends bilateral to the full D_n group (Synorbium 0.31 → 0.78, all real creatures now cluster in 0.72–0.89). `temporal_complexity` (pixel-wise std of COM-centered frames) is the load-bearing leg against trivial winners: STATIC = 0.0000 vs ≥ 0.0007 for every real creature.
+- **Negative control validated.** A static Gaussian blob passes mass_cv, footprint, symmetry, and persistent — the failure mode I'd been worried about — but is cleanly excluded by `temporal_complexity = 0`.
+- **Eval-matrix sketch in `proto/lenia-zoo/report.md`** § "Defensible eval matrix sketch": four-leg "is lifelike" gate (`persistent ∧ mass_cv < 0.05 ∧ temporal_complexity > τ ∧ dihedral_symmetry > 0.6`), then a monotone scalarization of `speed`, `footprint`, `dihedral_symmetry` for ranking. Exact scalarization deferred to `/init` panels + eval-adversary.
+- **Two adversarial concerns flagged for `/init` Phase 2.2**: slow-drifting smooth blob with `temporal_complexity` just above τ; two-creature collision that fuses into a rotating clump.
+- `intent_confidence` 0.60 → 0.80 (substrate + diagnostic vector + negative control all working; the open work is `/init`-level matrix freezing, not exploration).

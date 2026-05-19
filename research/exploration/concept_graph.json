@@ -147,23 +147,43 @@
       "cited_by": ["explore"]
     },
     {
-      "id": "gap-d-n-symmetry",
-      "type": "gap",
-      "label": "Generalize bilateral symmetry to full D_n group",
-      "summary": "Current implementation only checks H/V reflection, undersells D4-symmetric creatures (Synorbium scores 0.31). Need rotation-aware best-axis search before freezing eval.",
+      "id": "method-dihedral-symmetry",
+      "type": "method",
+      "label": "dihedral_symmetry (rotation-aware D_n score)",
+      "summary": "Replaces bilateral-only metric. Max over 8 reflection-axis candidates + rotation orders {2,3,4,6} after COM-centering. Synorbium 0.31 → 0.78. Implemented in lenia.py.",
       "cluster": "metrics",
-      "relevance": 0.75,
-      "intent_relevance": 0.85,
+      "relevance": 0.85,
+      "intent_relevance": 0.90,
       "cited_by": ["explore"]
     },
     {
-      "id": "gap-reward-hacking",
-      "type": "gap",
-      "label": "Reward-hacking surface of the diagnostic vector",
-      "summary": "Static blob trivially passes mass_cv≈0, footprint>0, symmetry→1, persistent=True. Need a temporal-complexity leg (e.g., variance of area_t and sym_t post-transient) to rule out trivial winners.",
+      "id": "method-temporal-complexity",
+      "type": "method",
+      "label": "temporal_complexity (centered-frame pixel std)",
+      "summary": "Pixel-wise std of frames after centering each on its instantaneous COM. Translation alone contributes nothing — only internal breathing/rotation/undulation. Static blob: 0.0000 (load-bearing leg).",
       "cluster": "metrics",
-      "relevance": 0.85,
-      "intent_relevance": 0.95,
+      "relevance": 0.95,
+      "intent_relevance": 1.0,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "method-static-blob-control",
+      "type": "method",
+      "label": "Synthetic static-blob negative control",
+      "summary": "Gaussian blob with same mass as Orbium, frames replicated. Passes mass_cv, footprint, dihedral_symmetry, persistent — but fails temporal_complexity. Validates the load-bearing leg.",
+      "cluster": "metrics",
+      "relevance": 0.8,
+      "intent_relevance": 0.9,
+      "cited_by": ["explore"]
+    },
+    {
+      "id": "concept-eval-matrix-sketch",
+      "type": "concept",
+      "label": "Eval-matrix sketch: 4-leg gate + scalarized score",
+      "summary": "Gate: persistent ∧ mass_cv<0.05 ∧ temporal>τ ∧ dihedral>0.6. Score: monotone fn of speed, footprint, dihedral. Drafted in proto/lenia-zoo/report.md, awaiting /init panel + eval-adversary to crystallize.",
+      "cluster": "metrics",
+      "relevance": 1.0,
+      "intent_relevance": 1.0,
       "cited_by": ["explore"]
     }
   ],
@@ -184,7 +204,13 @@
     {"source": "orbit-lenia-zoo", "target": "gap-non-fm-metric", "relation": "validates", "label": "prototype on 6 creatures"},
     {"source": "concept-behavior-modes", "target": "orbit-lenia-zoo", "relation": "emerges-from", "label": "empirical clustering"},
     {"source": "gap-d-n-symmetry", "target": "orbit-lenia-zoo", "relation": "questions", "label": "Synorbium low score"},
-    {"source": "gap-reward-hacking", "target": "gap-non-fm-metric", "relation": "questions", "label": "static blob would pass"}
+    {"source": "gap-reward-hacking", "target": "gap-non-fm-metric", "relation": "questions", "label": "static blob would pass"},
+    {"source": "method-dihedral-symmetry", "target": "gap-d-n-symmetry", "relation": "closes", "label": "Synorbium 0.31 → 0.78"},
+    {"source": "method-temporal-complexity", "target": "gap-reward-hacking", "relation": "closes", "label": "STATIC = 0.0000"},
+    {"source": "method-static-blob-control", "target": "method-temporal-complexity", "relation": "validates", "label": "negative control"},
+    {"source": "concept-eval-matrix-sketch", "target": "method-temporal-complexity", "relation": "uses", "label": "gate leg"},
+    {"source": "concept-eval-matrix-sketch", "target": "method-dihedral-symmetry", "relation": "uses", "label": "gate leg"},
+    {"source": "concept-eval-matrix-sketch", "target": "kumar-2024-asal", "relation": "alternative-to", "label": "non-FM evaluator"}
   ],
   "clusters": [
     {"id": "lenia-core", "label": "Lenia foundations", "color": "#4C72B0"},
@@ -192,9 +218,9 @@
     {"id": "metrics", "label": "Lifelikeness / behavior metrics", "color": "#55A868"}
   ],
   "meta": {
-    "generated_at": "2026-05-19T05:10:00",
+    "generated_at": "2026-05-19T05:30:00",
     "total_papers_reviewed": 5,
-    "intent_statement": "Build a foundation-model-free lifelikeness metric for ASAL-style Lenia search; prototype 5-dim vector cleanly separates Chan's translator/rotator/undulator behavior modes on a six-creature zoo; gaps (D_n symmetry, reward-hacking surface) identified for /init.",
-    "intent_confidence": 0.60
+    "intent_statement": "Foundation-model-free lifelikeness vector (mass_cv, speed, footprint, dihedral_symmetry, temporal_complexity) validated on 7-species zoo. Both pre-/init gaps closed: dihedral score (Synorbium 0.31→0.78) and temporal complexity (STATIC=0). Eval-matrix sketch drafted; ready for /init.",
+    "intent_confidence": 0.80
   }
 }

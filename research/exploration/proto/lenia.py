@@ -202,8 +202,8 @@ def footprint_area(A: np.ndarray, threshold: float = 0.1) -> float:
 def bilateral_symmetry(A: np.ndarray) -> float:
     """Best-axis bilateral symmetry score: correlation with mirrored self after centering.
 
-    For each candidate flip (horizontal / vertical), shift A so its COM lands at the
-    centroid of the grid, then return max correlation under reflection.
+    Only checks horizontal / vertical reflections — kept for back-compat. Use
+    `dihedral_symmetry` for the rotation-aware version.
     """
     m = A.sum()
     if m <= 1e-9:
@@ -222,9 +222,132 @@ def bilateral_symmetry(A: np.ndarray) -> float:
     return max(scores)
 
 
+def _center_on_com(A: np.ndarray) -> np.ndarray:
+    m = A.sum()
+    if m <= 1e-9:
+        return A
+    H, W = A.shape
+    ys, xs = np.indices((H, W))
+    cy = int(round((A * ys).sum() / m))
+    cx = int(round((A * xs).sum() / m))
+    return np.roll(A, (H // 2 - cy, W // 2 - cx), axis=(0, 1))
+
+
+def dihedral_symmetry(
+    A: np.ndarray,
+    *,
+    reflection_angles: tuple[float, ...] = (0.0, 30.0, 45.0, 60.0, 90.0, 120.0, 135.0, 150.0),
+    rotation_orders: tuple[int, ...] = (2, 3, 4, 6),
+) -> float:
+    """Best-axis dihedral symmetry score — rotation-aware extension of bilateral.
+
+    After centering on the COM, returns the max over:
+      - reflection self-corr at `reflection_angles` candidate axes
+      - rotation self-corr at `rotation_orders` candidate orders
+
+    A creature with D_k symmetry (e.g. Synorbium D4) scores ~1 because rotation
+    by 360/k aligns it with itself, even if no axis-aligned bilateral flip does.
+    """
+    from scipy.ndimage import rotate as _rotate
+
+    m = A.sum()
+    if m <= 1e-9:
+        return 0.0
+    Ac = _center_on_com(A)
+    Ac_norm = (Ac * Ac).sum()
+    if Ac_norm <= 1e-12:
+        return 0.0
+
+    best = 0.0
+    for theta in reflection_angles:
+        Ar = _rotate(Ac, theta, reshape=False, order=1, mode="constant", cval=0.0)
+        flipped = np.fliplr(Ar)
+        num = (Ar * flipped).sum()
+        den = np.sqrt((Ar * Ar).sum() * (flipped * flipped).sum())
+        score = float(num / den) if den > 0 else 0.0
+        if score > best:
+            best = score
+
+    for n in rotation_orders:
+        Ar = _rotate(Ac, 360.0 / n, reshape=False, order=1, mode="constant", cval=0.0)
+        num = (Ac * Ar).sum()
+        den = np.sqrt(Ac_norm * (Ar * Ar).sum())
+        score = float(num / den) if den > 0 else 0.0
+        if score > best:
+            best = score
+
+    return best
+
+
+def temporal_complexity(
+    frames: np.ndarray, com_y: np.ndarray, com_x: np.ndarray, world_size: int, *, skip: int = 30
+) -> float:
+    """Pixel-wise std of frames after centering each on its instantaneous COM.
+
+    Captures *internal* dynamics only — pure translation contributes nothing
+    because the creature is registered to the centroid before differencing.
+    A static blob → 0. A breathing / rotating / undulating creature → > 0.
+    """
+    if len(frames) <= skip + 1:
+        return 0.0
+    H = W = world_size
+    centered = []
+    n_frames = len(frames)
+    n_traj = len(com_y)
+    # frames may be subsampled (keep_every > 1); map frame index → trajectory index.
+    for i, f in enumerate(frames):
+        traj_idx = min(int(round(i * (n_traj - 1) / max(1, n_frames - 1))), n_traj - 1)
+        cy = com_y[traj_idx] % H
+        cx = com_x[traj_idx] % W
+        if np.isnan(cy) or np.isnan(cx):
+            continue
+        shifted = np.roll(f, (H // 2 - int(round(cy)), W // 2 - int(round(cx))), axis=(0, 1))
+        centered.append(shifted)
+    centered = np.array(centered[max(0, skip // max(1, n_traj // n_frames)):])
+    if len(centered) < 2:
+        return 0.0
+    return float(centered.std(axis=0).mean())
+
+
 def persistent(mass: np.ndarray, fraction: float = 0.5) -> bool:
     """True iff mass never falls below `fraction` × initial-mass-after-transient."""
     if len(mass) < 10:
         return False
     initial = mass[5:15].mean()
     return bool(mass[15:].min() > fraction * initial)
+
+
+# ---------------------------------------------------------------------------
+# Synthetic creature — static Gaussian blob, for negative-control diagnostics.
+# ---------------------------------------------------------------------------
+
+def synthetic_static_blob_sim(
+    target_mass: float = 75.0,
+    sigma: float = 6.0,
+    world_size: int = 160,
+    steps: int = 200,
+    T: int = 10,
+) -> SimResult:
+    """Build a fake SimResult: identical Gaussian-blob frames, COM fixed at center.
+
+    Negative control. Mass quasi-conserved (exactly, since the blob never changes).
+    Footprint, symmetry are constant. temporal_complexity → 0. Speed → 0.
+    """
+    H = W = world_size
+    ys, xs = np.indices((H, W))
+    blob = np.exp(-((xs - W / 2) ** 2 + (ys - H / 2) ** 2) / (2 * sigma ** 2))
+    blob = blob * (target_mass / blob.sum())
+    blob = np.clip(blob, 0.0, 1.0)
+
+    frames = np.tile(blob[None, :, :], (steps + 1, 1, 1))
+    mass = np.full(steps + 1, blob.sum())
+    com = np.full(steps + 1, world_size / 2)
+    return SimResult(
+        frames=frames,
+        mass=mass,
+        com_y=com,
+        com_x=com,
+        kernel=np.zeros((world_size, world_size)),
+        params={"R": 0, "T": T, "m": 0.0, "s": 0.0},
+        world_size=world_size,
+    )
