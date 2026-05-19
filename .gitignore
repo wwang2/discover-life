@@ -1,0 +1,25 @@
+# research-everything state
+.re/
+.worktrees/
+.omc/
+
+# Eval construction checkpoint (ephemeral, machine-local)
+research/eval/.checkpoint
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Large binary artifacts (checkpoints, datasets, model weights)
+*.pt
+*.ckpt
+*.h5
+*.pkl
+*.npy
+*.npz
+*.safetensors
+
+# Temporary files
+/tmp/
+*.log
