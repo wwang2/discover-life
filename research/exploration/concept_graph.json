@@ -42,7 +42,9 @@
     {"id": "concept-lenia-as-computation", "type": "concept", "label": "Lenia as a substrate for computation", "summary": "Two paths: (a) hand-build logic-gate collisions among solitons à la GoL-glider-guns; (b) train K, G end-to-end (NCA). Path (b) is empirically winning — Béna 2025 emulates a NN inside the CA state.", "cluster": "neural-ca", "relevance": 1.0, "intent_relevance": 1.0, "cited_by": ["explore"]},
     {"id": "concept-lenia-neural-field", "type": "concept", "label": "Lenia ≡ neural field (PDE limit)", "summary": "Asymptotic Lenia is reaction-diffusion → which is the Amari/Wilson-Cowan neural field equation with a custom kernel and pointwise nonlinearity. Solitons ≡ bump attractors. Math is shared.", "cluster": "neural-field", "relevance": 1.0, "intent_relevance": 1.0, "cited_by": ["explore"]},
 
-    {"id": "gap-soliton-composition", "type": "gap", "label": "Compositional soliton interactions", "summary": "Lenia gliders typically merge/annihilate on collision rather than acting as a logic gate. Open question: can a parameter regime (or a trained K, G) be found where collisions are deterministic AND function-shaped?", "cluster": "neural-ca", "relevance": 0.95, "intent_relevance": 1.0, "cited_by": ["explore"]},
+    {"id": "gap-soliton-composition", "type": "gap", "label": "Compositional soliton interactions", "summary": "Lenia gliders typically merge/annihilate on collision rather than acting as a logic gate. Open question: can a parameter regime (or a trained K, G) be found where collisions are deterministic AND function-shaped? PARTIALLY ANSWERED by orbit-lenia-collisions — 4/8 sample angles pass through, 2/8 spawn-3.", "cluster": "neural-ca", "relevance": 0.95, "intent_relevance": 1.0, "cited_by": ["explore"]},
+    {"id": "orbit-lenia-collisions", "type": "method", "label": "lenia-collisions (this orbit)", "summary": "8-angle Orbium × Orbium collision sweep. 4/8 pass-through (96% mass conservation), 2/8 spawn-3 (2-in / 3-out), 2/8 annihilate. Validates Pole 2 viability in vanilla Lenia.", "cluster": "metrics-vector", "relevance": 1.0, "intent_relevance": 1.0, "cited_by": ["explore"]},
+    {"id": "concept-collision-instruction-set", "type": "concept", "label": "Collision-outcome instruction set", "summary": "Map of (creature-A × creature-B × angle × phase × offset) → outcome-class. Vanilla Lenia already exhibits ≥3 classes (annihilate, pass-through, spawn-3). The substrate analog of a CPU's opcode table.", "cluster": "neural-ca", "relevance": 1.0, "intent_relevance": 1.0, "cited_by": ["explore"]},
     {"id": "gap-soliton-capacity", "type": "gap", "label": "Information capacity of Lenia solitons", "summary": "Bits per glider, channel capacity for soliton-based communication. No measurement in the literature.", "cluster": "neural-ca", "relevance": 0.85, "intent_relevance": 0.95, "cited_by": ["explore"]},
     {"id": "gap-vector-as-aux-loss", "type": "gap", "label": "Diagnostic vector as auxiliary loss for trained NCA", "summary": "Does forcing a trained NCA to satisfy the 5-leg gate (persistent, mass_cv, temporal, dihedral) cost or buy task accuracy? Direct test of 'lifelikeness as an inductive bias'.", "cluster": "metrics-vector", "relevance": 0.9, "intent_relevance": 1.0, "cited_by": ["explore"]}
   ],
@@ -83,7 +85,11 @@
     {"source": "gap-soliton-composition", "target": "concept-lenia-as-computation", "relation": "questions", "label": "merge ≠ logic gate"},
     {"source": "gap-soliton-capacity", "target": "concept-lenia-as-computation", "relation": "questions"},
     {"source": "gap-vector-as-aux-loss", "target": "concept-eval-matrix-sketch", "relation": "extends"},
-    {"source": "gap-vector-as-aux-loss", "target": "concept-lenia-as-computation", "relation": "extends"}
+    {"source": "gap-vector-as-aux-loss", "target": "concept-lenia-as-computation", "relation": "extends"},
+    {"source": "orbit-lenia-collisions", "target": "orbit-lenia-baseline", "relation": "builds-on", "label": "uses simulate_field + place_pattern"},
+    {"source": "orbit-lenia-collisions", "target": "gap-soliton-composition", "relation": "answers", "label": "non-trivial outcomes exist"},
+    {"source": "concept-collision-instruction-set", "target": "orbit-lenia-collisions", "relation": "emerges-from"},
+    {"source": "concept-collision-instruction-set", "target": "concept-lenia-as-computation", "relation": "uses", "label": "operationalizes Pole 2"}
   ],
   "clusters": [
     {"id": "lenia-core",      "label": "Lenia foundations",                "color": "#4C72B0"},
@@ -96,9 +102,9 @@
     {"id": "metrics-vector",  "label": "Diagnostic vector (this work)",    "color": "#CCB974"}
   ],
   "meta": {
-    "generated_at": "2026-05-19T05:50:00",
+    "generated_at": "2026-05-19T06:10:00",
     "total_papers_reviewed": 18,
-    "intent_statement": "Pick a contribution at the intersection of (i) the foundation-model-free diagnostic vector we built, (ii) the rapidly-maturing learnable-Lenia/NCA family (Béna 2025 emulates a NN inside the CA state), and (iii) the open gap of compositional soliton interactions. Two candidate problem statements have emerged.",
-    "intent_confidence": 0.75
+    "intent_statement": "Map and exploit the collision-outcome 'instruction set' of Lenia solitons. 8-angle Orbium × Orbium prototype shows 4/8 pass-through + 2/8 spawn-3 + 2/8 annihilate — at least 3 deterministic outcome classes in vanilla Lenia, supporting Pole 2 (compositional soliton computation). 5-dim diagnostic vector remains as substrate-gate.",
+    "intent_confidence": 0.85
   }
 }

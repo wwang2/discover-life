@@ -121,6 +121,92 @@ def _unwrap_periodic(c: np.ndarray, W: int) -> np.ndarray:
     return np.concatenate([[c[0]], c[0] + np.cumsum(d)])
 
 
+def simulate_field(
+    A0: np.ndarray,
+    params: dict,
+    *,
+    steps: int = 200,
+    keep_every: int = 1,
+) -> SimResult:
+    """Run a pre-built initial field through Lenia. Used by multi-creature setups
+    (collisions, ensembles) where the initial state is constructed externally.
+
+    `params` must contain `R`, `T`, `m`, `s`. `b` defaults to [1.0] (single ring)."""
+    world_size = A0.shape[0]
+    assert A0.shape == (world_size, world_size), "A0 must be square"
+    R = params["R"]
+    T = params["T"]
+    mu = params["m"]
+    sigma = params["s"]
+    b = params.get("b", [1.0])
+    if isinstance(b, str):
+        b = [1.0]  # Chan's "b": "1" → single ring
+    dt = 1.0 / T
+
+    K = make_kernel(R, b, world_size)
+    K_fft = np.fft.fft2(np.fft.ifftshift(K))
+    A = A0.copy()
+    ys, xs = np.indices(A.shape)
+
+    frames = [A.copy()]
+    masses = [A.sum()]
+    cy0, cx0 = _com_periodic(A, ys, xs, world_size)
+    coms_y = [cy0]
+    coms_x = [cx0]
+
+    for step in range(steps):
+        U = np.real(np.fft.ifft2(np.fft.fft2(A) * K_fft))
+        A = np.clip(A + dt * growth(U, mu, sigma), 0.0, 1.0)
+        if (step + 1) % keep_every == 0 or step == steps - 1:
+            frames.append(A.copy())
+        masses.append(A.sum())
+        cy, cx = _com_periodic(A, ys, xs, world_size)
+        coms_y.append(cy)
+        coms_x.append(cx)
+
+    return SimResult(
+        frames=np.array(frames),
+        mass=np.array(masses),
+        com_y=_unwrap_periodic(coms_y, world_size),
+        com_x=_unwrap_periodic(coms_x, world_size),
+        kernel=K,
+        params=params,
+        world_size=world_size,
+    )
+
+
+def place_pattern(
+    world: np.ndarray,
+    pattern: np.ndarray,
+    center: tuple[int, int],
+    angle_deg: float = 0.0,
+) -> np.ndarray:
+    """Rotate `pattern` by `angle_deg` and paste it (additively) into `world`
+    centered at `center=(y, x)`. Out-of-bounds parts are clipped. Returns the
+    modified world."""
+    from scipy.ndimage import rotate as _rotate
+
+    if angle_deg != 0.0:
+        p = _rotate(pattern, angle_deg, reshape=True, order=1, mode="constant", cval=0.0)
+    else:
+        p = pattern
+    H, W = world.shape
+    h, w = p.shape
+    cy, cx = center
+    y0 = cy - h // 2
+    x0 = cx - w // 2
+    # Slice intersection with world bounds
+    py0 = max(0, -y0)
+    px0 = max(0, -x0)
+    py1 = h - max(0, (y0 + h) - H)
+    px1 = w - max(0, (x0 + w) - W)
+    wy0 = max(0, y0)
+    wx0 = max(0, x0)
+    world[wy0 : wy0 + (py1 - py0), wx0 : wx0 + (px1 - px0)] += p[py0:py1, px0:px1]
+    np.clip(world, 0.0, 1.0, out=world)
+    return world
+
+
 def run_simulation(
     creature: dict,
     *,

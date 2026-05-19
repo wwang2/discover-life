@@ -1,0 +1,65 @@
+{
+  "alone": {
+    "angle": null,
+    "outcome": "singleton",
+    "initial_mass": 76.86274509803923,
+    "final_mass": 73.80814322222766,
+    "mass_fraction": 0.9602590062075536
+  },
+  "0\u00b0": {
+    "angle": 0.0,
+    "outcome": "annihilate",
+    "initial_mass": 129.15686274509804,
+    "final_mass": 0.0,
+    "mass_fraction": 0.0
+  },
+  "45\u00b0": {
+    "angle": 45.0,
+    "outcome": "passthrough",
+    "initial_mass": 152.98938074682076,
+    "final_mass": 147.48419168409384,
+    "mass_fraction": 0.964015874593039
+  },
+  "90\u00b0": {
+    "angle": 90.0,
+    "outcome": "passthrough",
+    "initial_mass": 153.72549019607845,
+    "final_mass": 147.61628644445526,
+    "mass_fraction": 0.9602590062075532
+  },
+  "135\u00b0": {
+    "angle": 135.0,
+    "outcome": "spawn-3",
+    "initial_mass": 152.98938074682076,
+    "final_mass": 147.6624578224571,
+    "mass_fraction": 0.9651810936264976
+  },
+  "180\u00b0": {
+    "angle": 180.0,
+    "outcome": "annihilate",
+    "initial_mass": 153.72549019607845,
+    "final_mass": 0.0,
+    "mass_fraction": 0.0
+  },
+  "225\u00b0": {
+    "angle": 225.0,
+    "outcome": "passthrough",
+    "initial_mass": 152.98938074682076,
+    "final_mass": 147.66245782245727,
+    "mass_fraction": 0.9651810936264987
+  },
+  "270\u00b0": {
+    "angle": 270.0,
+    "outcome": "passthrough",
+    "initial_mass": 153.72549019607845,
+    "final_mass": 147.61945080456223,
+    "mass_fraction": 0.960279590692943
+  },
+  "315\u00b0": {
+    "angle": 315.0,
+    "outcome": "spawn-3",
+    "initial_mass": 152.98938074682076,
+    "final_mass": 147.83462434435125,
+    "mass_fraction": 0.9663064431184278
+  }
+}
