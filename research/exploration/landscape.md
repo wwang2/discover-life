@@ -1,55 +1,76 @@
-# Research Landscape: Lenia + Automated Search for Artificial Life
+# Research Landscape: Lenia + Automated Search for Artificial Life + Lenia as Computation
 
 ## Working Problem Statement
-**Beat CLIP-as-judge** in ASAL-style Lenia search with a foundation-model-free five-dim lifelikeness vector `(mass_cv, locomotion_speed, footprint, dihedral_symmetry, temporal_complexity)` that (i) cleanly classifies Chan's canonical translator / rotator / large-undulator species, (ii) cannot be gamed by a static Gaussian blob, and (iii) is computable in <1 ms per frame on CPU. The campaign question: can the same vector (or a monotone combination of it) drive Sep-CMA-ES over Lenia rule space toward novel Orbium-class creatures at comparable hit rate to CLIP-supervised ASAL, at a fraction of the per-evaluation compute? Both pre-`/init` weaknesses identified in the first zoo round have been closed — see `proto/lenia-zoo/report.md`.
+*Pivoting — after a literature sweep over 18 papers (see §Concept Graph clusters), the original "beat CLIP-as-judge with a non-FM lifelikeness metric" framing is still defensible but now sits between two more compelling poles. **Pole 1 — discovery**: Hamon (2024) and Plantec (2022, Flow-Lenia) already use FM-free diversity signals (perturbation-response agency, curiosity / IMGEP) to discover Lenia creatures with sensorimotor agency; our 5-dim diagnostic vector is novel mainly in being simpler and cheaper, which is a tooling contribution, not a research one. **Pole 2 — Lenia-as-computation**: Béna et al. (2025, "A Path to Universal NCA", GECCO) train neural CAs to do matrix multiplication, matrix transpose, and to emulate a neural network solving MNIST entirely within the CA state; Xu & Miikkulainen (2025) attack ARC-AGI with NCAs. The compositional-soliton question — can Lenia gliders be made to act as logic gates rather than merge/annihilate on collision — is wide open and is what would distinguish Lenia from "just another conv-RNN".*
+
+**Drafted candidate problem statement (Pole 2 framing):** *Find Lenia rule parameters and initial-condition seeds under which solitons act as deterministic logical primitives — wires (signal-carrying gliders), gates (collisions whose outgoing-glider count is a function of incoming-glider count), and memories (stable bistable structures). The 5-dim diagnostic vector becomes the substrate gate ("is the candidate alive at all?"); the search objective becomes task-specific computational correctness. This is to Lenia what Berlekamp-Conway-Guy's glider-gun constructions were to Game of Life, but in a continuous and partially differentiable setting.*
 
 ## What Is Known
-- **Lenia substrate is well-defined and stable**: single-channel 2D continuous CA, bell-shaped kernel + polynomial growth, ~6 hyperparameters (R, T, μ, σ, b, kernel/growth families). Chan (2019) catalogued 400+ self-organized species in 18 families; Orbium *unicaudatus* is the canonical "glider".
-- **Baseline reproduces Orbium cleanly**: 76.86 → 73.81 mass (~0.7 % oscillation, no drift after t ≈ 3), straight-line COM trajectory at 6.25 px / Lenia time-unit on a 128×128 torus. Implementation is 250 LOC of pure NumPy + matplotlib. Shared simulator at `proto/lenia.py`.
-- **Six-species zoo runs in 2 s total** on CPU and cleanly separates three behavior modes: translators (Orbium uni/bi/phantasma, Synorbium ~6 px/u), rotator (Gyrorbium ~0.5 px/u traces a closed COM loop), large-undulator (Vagorbium ~5.9 px/u with 614-px footprint vs 150–275 for others). See `proto/lenia-zoo/report.md`.
-- **ASAL (Sakana AI, 2024)** is the SOTA search-over-Lenia method: CLIP embedding as judge, Sep-CMA-ES for continuous targets/open-endedness, custom GA for illumination. Supports 7 ALife substrates beyond Lenia.
-- **Generalizations exist**: Glaberish (Davis 2022) decouples kernel from growth; "Existence of Life in Lenia" (Kojima 2022) formalizes soliton stability.
+
+### Substrate (lenia-core)
+- Continuous CA with FFT-toroidal convolution, polynomial kernel + growth (Chan 2019). Multichannel + higher-D extension (Chan 2020).
+- **Soliton stability is formalized**: Kojima & Ikegami 2022 give existence-of-life conditions; Kojima 2023 shows asymptotic Lenia is a reaction-diffusion PDE; Kojima, Yevenko & Ikegami 2025 derive a *velocity-free glider equation* and use gradient descent on it to find new gliders (including faster ones than Chan's catalog).
+- **Lenia ≡ a neural field equation.** Amari (1977) and Wilson-Cowan (1972) define continuous-population neural dynamics whose mathematical form (`∂_t u = −u + ∫ w(x−y) f(u(y)) dy + I`) is identical to asymptotic Lenia after relabeling. Solitons in Lenia are bump attractors in continuous-attractor neural networks. This is one of the most important findings of this sweep — it places Lenia at the intersection of three communities (ALife, computational neuroscience, deep learning).
+
+### Lenia variants (lenia-variants)
+- **Flow-Lenia (Plantec 2022, ALife 2023 Best Paper)** — adds mass conservation; rule parameters live *in the field itself* so multiple species with locally-coherent rules can coexist. Best current substrate for ecology / open-endedness studies.
+- **Particle Lenia (Mordvintsev 2022)** — energy-based reformulation: each particle follows the negative gradient of a global energy. Differentiable end-to-end; gives a clean variational perspective.
+- **Glaberish (Davis & Bongard 2022)** — decouples kernel from growth, opening composition rules outside Lenia's original space.
+
+### Search & diversity (search)
+- **ASAL (Kumar et al. 2024, Sakana)** — CLIP embedding as judge × Sep-CMA-ES / GA / brute force × 7 substrates.
+- **IMGEP for Lenia (Reinke, Etcheverry, Oudeyer 2020, ICLR)** — curiosity-driven goal exploration on Lenia, **FM-free, predates ASAL by 4 years**, and was specifically built to overcome random-sampling failure in high-D non-linear parameter spaces.
+- **Sensorimotor agency in CA (Hamon et al. 2024, Science Advances)** — discovers Lenia creatures that *navigate obstacles robustly*; operationalizes "agency" as a perturbation-response diversity signal. Direct precedent for using behavioral metrics (not CLIP) as the evaluator.
+- **Curiosity-driven AI Scientist on Flow-Lenia (Schulze et al. 2025)** — IMGEP + evolutionary activity / compression-complexity / multi-scale entropy.
+
+### Trainable / Neural CA (neural-ca) — this is the cluster that changed our priors most
+- **Growing NCA (Mordvintsev et al. 2020, Distill)** — end-to-end differentiable CA grows / regenerates target images from a seed. Conv + ReLU pointwise rule. The canonical "learnable Lenia".
+- **Self-classifying NCA (Randazzo et al. 2020, Distill)** — NCA classifies MNIST via local message-passing only, no global pooling. 22 k params.
+- **Universal NCA (Béna, Faldor, Goodman, Cully 2025, GECCO)** — **trains NCA via gradient descent to perform matrix multiplication, matrix transpose, AND emulate a NN solving MNIST — all within the CA state.** Single most-relevant precedent we found for "Lenia as computation".
+- **NCA for ARC-AGI (Xu & Miikkulainen 2025, ALife)** — NCAs attacking explicit symbolic reasoning. The community is actively probing reasoning capacity.
+
+### Reservoir computing + edge-of-chaos (edge-of-chaos)
+- CAs at the edge of chaos exhibit highest computational capacity (Yilmaz 2014, Carroll 2020). "Where in Lenia parameter space does life live?" is the right physics framing for our diagnostic vector — it's an empirical edge-of-chaos manifold.
 
 ## Candidate Metrics
-- **CLIP–text cosine similarity** (ASAL supervised) — given a text prompt, match the simulation's final-frame embedding.
-- **CLIP temporal novelty** (ASAL open-endedness) — maximize variance of frame embeddings over the trajectory.
-- **CLIP embedding coverage / illumination** (ASAL) — MAP-Elites-style diversity across embedding space.
-- *Foundation-model-free vector — implemented in `proto/lenia.py` and validated on a 7-species zoo (6 real Lenia creatures + a synthetic static-blob negative control) in `proto/lenia-zoo/`:*
-  - **`mass_cv`** = `std(mass[3T:]) / mean(mass[3T:])`. Zoo: real 0.002–0.025, static 0.000. ✓
-  - **`locomotion_speed`** = unwrapped COM displacement post-transient / Lenia time. Zoo: real 0.5 (rotator) – 6.4 (translator), static 0.0. ✓
-  - **`footprint`** = mean `#{A > 0.1}` post-transient. Zoo: 144–614 (real), 277 (static). ✓
-  - **`dihedral_symmetry`** (replaces the earlier bilateral-only metric) = max over {8 reflection-axis candidates ∪ rotation orders {2,3,4,6}} of self-correlation after COM-centering. Zoo: real 0.72–0.89 (Synorbium 0.78, up from 0.31), static 1.00. ✓
-  - **`temporal_complexity`** = pixel-wise std of frames after centering each on its instantaneous COM. Captures *internal* dynamics only — translation alone contributes nothing. Zoo: real 0.0007–0.0105, **static 0.0000**. ✓ — load-bearing leg against trivial winners.
-- *Gate metric:* **`persistent`** = `mass[15:].min() > 0.5 · mean(mass[5:15])`. Binary; all 7 zoo entries pass (necessary but not sufficient, hence the four real-valued legs above).
+- *Foundation-model-free vector (validated in `proto/lenia-zoo/`):* `mass_cv`, `locomotion_speed`, `footprint`, `dihedral_symmetry`, `temporal_complexity`, with `persistent` as a binary gate. Both metric gaps closed (Synorbium D4 lift, static-blob negative-control failure).
+- **Hamon-style perturbation-response agency** (from sensorimotor Lenia) — could augment the vector with a 6th leg measuring robustness to random perturbations.
+- **CLIP-novelty (ASAL)** as a baseline to beat — must remain in the eval matrix so the contribution is comparable.
+- **Computational correctness** (Pole 2): task-specific scalar (signal arrival, gate truth-table fidelity, NN-emulation accuracy à la Béna 2025).
 
-## Candidate Systems
-- *Default test matrix (placeholders, to be filled at `/init` time):*
-  - `lenia-orbium-128` — single-channel R=13, T=10 grid; eval search must recover Orbium-like creatures from random initial condition + seed parameters.
-  - `lenia-multichannel-128` — 3-channel R=18, T=10 grid (Chan 2020 family). Harder, more diverse creatures.
-  - `lenia-glaberish-128` — Davis 2022 composition rules. Tests whether the search method survives substrate-extension.
+## Candidate Systems (eval matrix)
 
-## Candidate Baselines
-- ASAL Sep-CMA-ES + CLIP-supervised on `lenia-orbium-128` — the obvious comparator.
-- Random search (uniform over rule hyperparams + initial conditions) — establishes the floor.
-- *To populate:* per-system baseline scores from the ASAL paper for the chosen metric. Will be required for `proposed_eval.yaml`.
+| system | what it stresses |
+|---|---|
+| `lenia-orbium-128` | single-channel, R=13, T=10. Baseline + 5 zoo species + STATIC negative control. Already implemented. |
+| `flow-lenia-128`   | mass-conservative substrate. Tests whether method generalizes beyond vanilla Lenia. |
+| `lenia-task-wire`  | (Pole 2 only) — initial condition has signal-source at one corner; metric is "does a glider carry it to the other corner within N steps". |
+| `lenia-task-gate`  | (Pole 2 only) — two glider streams at known phases; metric is logical-correctness of the outgoing glider stream. |
+
+## Candidate Baselines (must beat for any contribution)
+- ASAL Sep-CMA-ES + CLIP-supervised on `lenia-orbium-128`. Cited per-system score required.
+- Reinke-2020 IMGEP on `lenia-orbium-128`. Same.
+- Random search over rule hyperparams + initial conditions. The floor.
 
 ## Open Questions
-- What does "lifelike" or "interesting" mean as a *non-foundation-model* metric we can optimize against in Lenia rule/initial-condition space?
-- Is the goal to *find* novel rules (search problem) or to *evolve* solitons toward target behaviors (optimization problem)? ASAL does both; we may need to pick one.
-- Does ASAL's CLIP-as-judge get gamed by adversarial high-entropy textures with no biological structure? Worth a controlled diagnostic.
-- Can a non-FM metric rediscover Orbium-class creatures starting from random Lenia parameters?
+- (Pole 2) **Can soliton collisions be made deterministic and function-shaped?** Vanilla Lenia gliders typically merge or annihilate. Does training K, G (NCA) give us this for free? Does it require Flow-Lenia's mass conservation? Does Glaberish's decoupled kernel/growth help?
+- (Pole 2) **What is the information capacity of a single Lenia glider?** Bits per glider. Channel capacity. Hard upper bounds.
+- (Both poles) **Does the 5-dim diagnostic vector form a meaningful manifold over Lenia parameter space?** I.e., is there a continuous "lifelike region" with clear boundaries, or is it shattered? This is the empirical edge-of-chaos question for our substrate.
+- (Pole 1) **How does our vector compare against Hamon's perturbation-response signal at recovering known Lenia species under matched compute?** Direct head-to-head.
 
-## Promising Directions
-1. **Beat ASAL's CLIP-judge** with a foundation-model-free lifelikeness metric (mass-conservation + locomotion + persistence). Same Sep-CMA-ES, swap the evaluator. Win condition: comparable or better Orbium-class hit rate at lower compute, with a more interpretable / less gameable reward.
-2. **Open-endedness benchmark with diagnostics** — construct adversarial Lenia simulations that produce high CLIP-novelty but no genuine soliton structure, and use them to probe whether ASAL's open-endedness metric is robust.
-3. **Cheaper search** — gradient-through-simulation (Lenia is fully differentiable in JAX) + learned rule prior beats Sep-CMA-ES on FLOPs to a Orbium-class hit.
+## Promising Directions (sharpened by sweep)
 
-## Ruled Out
-- *None yet — too early.*
+1. **(Pole 2 ★)** *Lenia-as-computation via search*: find Lenia / Flow-Lenia / NCA parameters under which gliders implement wires, gates, and memories. Use the 5-dim vector as a gate (substrate must be alive); score is task correctness. Strongest contribution if it works; substantial risk of "merging / annihilation" being a fundamental obstacle.
+2. **(Pole 1)** *Cheap, principled, non-FM evaluator*: head-to-head our 5-dim vector vs CLIP-novelty vs Hamon perturbation-response vs IMGEP-curiosity at recovering known Lenia species. Cleanest contribution; smaller surprise.
+3. **(Pole 1.5)** *Diagnostic vector as auxiliary loss for trained NCA*: take Béna-2025 setup, add the 5-leg gate as an aux loss, see if the trained CA solves the task while *also* looking like a Lenia creature. Tests "lifelikeness as an inductive bias".
+
+## Ruled Out / De-prioritized
+- ❌ *Pure ASAL re-implementation with a different evaluator.* Schulze 2025 and Hamon 2024 are stronger non-CLIP baselines than we'd be able to beat without a sharper angle. The 5-dim vector alone is a tooling contribution, not a paper.
+- ❌ *Pure "find more solitons" without a new objective.* Chan's catalog is exhaustive; new families need either new substrate (Glaberish, Flow-Lenia) or a new functional criterion (computation, agency).
 
 ## What Changed This Round
-- **Both pre-`/init` metric gaps closed.** `dihedral_symmetry` extends bilateral to the full D_n group (Synorbium 0.31 → 0.78, all real creatures now cluster in 0.72–0.89). `temporal_complexity` (pixel-wise std of COM-centered frames) is the load-bearing leg against trivial winners: STATIC = 0.0000 vs ≥ 0.0007 for every real creature.
-- **Negative control validated.** A static Gaussian blob passes mass_cv, footprint, symmetry, and persistent — the failure mode I'd been worried about — but is cleanly excluded by `temporal_complexity = 0`.
-- **Eval-matrix sketch in `proto/lenia-zoo/report.md`** § "Defensible eval matrix sketch": four-leg "is lifelike" gate (`persistent ∧ mass_cv < 0.05 ∧ temporal_complexity > τ ∧ dihedral_symmetry > 0.6`), then a monotone scalarization of `speed`, `footprint`, `dihedral_symmetry` for ranking. Exact scalarization deferred to `/init` panels + eval-adversary.
-- **Two adversarial concerns flagged for `/init` Phase 2.2**: slow-drifting smooth blob with `temporal_complexity` just above τ; two-creature collision that fuses into a rotating clump.
-- `intent_confidence` 0.60 → 0.80 (substrate + diagnostic vector + negative control all working; the open work is `/init`-level matrix freezing, not exploration).
+- **Mental model upgrade**: Lenia ≠ just an ALife toy. Trainable Lenia (NCA) is *literally a recurrent ConvNet*, and the 2025 Béna paper shows it can be trained to emulate a NN solving MNIST inside the CA state. Asymptotic Lenia is structurally identical to Amari/Wilson-Cowan neural fields. **Lenia sits at the intersection of ALife, computational neuroscience, and deep learning** — picking a problem at that intersection is the highest-leverage move.
+- **Pole 2 (computation) added** as the leading candidate framing. Concrete precedents in `concept-lenia-as-computation` cluster.
+- **Two non-FM evaluators predate ours** (IMGEP 2020, Sensorimotor-Lenia 2024). The 5-dim vector is *not* the first non-FM evaluator on Lenia; that's a story-correction.
+- 13 new references added; 8 clusters in the concept graph.
+- `intent_confidence` 0.80 → **0.75** (sharpened *understanding* but increased *option space*; the 0.80 was premature given Pole 2 changes the problem framing).

@@ -1,4 +1,5 @@
 references:
+  # ---- Lenia foundations ----
   - key: chan-2019-lenia
     title: "Lenia — Biology of Artificial Life"
     authors: "Chan, B. W.-C."
@@ -14,25 +15,7 @@ references:
     year: 2020
     url: "https://arxiv.org/abs/2005.03742"
     type: paper
-    finding: "Extends Lenia to higher dimensions, multiple channels, and richer kernels; introduces taxonomic hierarchy and parameter-space cartography."
-    cited_by: [explore]
-
-  - key: kumar-2024-asal
-    title: "Automating the Search for Artificial Life with Foundation Models"
-    authors: "Kumar, A., Lu, C., Kirsch, L., Tang, Y., Stanley, K. O., Isola, P., Ha, D."
-    year: 2024
-    url: "https://arxiv.org/abs/2412.17799"
-    type: paper
-    finding: "Uses CLIP embeddings as judges to make qualitative ALife phenomena quantitative. Three objectives (supervised target, open-endedness, illumination); three search strategies (Sep-CMA-ES, custom GA, brute force). Supports 7 substrates including Lenia, Particle Lenia, Boids, Particle Life."
-    cited_by: [explore]
-
-  - key: davis-2022-glaberish
-    title: "Glaberish: Generalizing the Continuously-Valued Lenia Framework to Arbitrary Composition Rules"
-    authors: "Davis, Q. T., Bongard, J."
-    year: 2022
-    url: "https://arxiv.org/abs/2205.10463"
-    type: paper
-    finding: "Generalizes Lenia by decoupling kernel from growth function and allowing arbitrary composition; reveals new families of life-like patterns outside the original Lenia search space."
+    finding: "Multichannel + higher-D Lenia; richer kernels and growth families; taxonomic hierarchy."
     cited_by: [explore]
 
   - key: kojima-2022-existence
@@ -41,7 +24,7 @@ references:
     year: 2022
     url: "https://arxiv.org/abs/2203.14390"
     type: paper
-    finding: "Formal study of soliton stability and parameter-space invariance for Lenia species; establishes conditions under which a creature persists under rule perturbation."
+    finding: "Soliton stability and parameter-space invariance — formal conditions under which a Lenia creature persists under perturbation."
     cited_by: [explore]
 
   - key: chakazul-lenia-repo
@@ -50,5 +33,163 @@ references:
     year: 2025
     url: "https://github.com/Chakazul/Lenia"
     type: software
-    finding: "Reference Python implementation, RLE-encoded creature library (animals.json, animals3D.json), kernel/growth dispatch tables (kn ∈ {1..4}, gn ∈ {1..3}). Source for the canonical Orbium parameters and cells used by lenia-baseline."
+    finding: "Reference implementation, RLE-encoded creature library, kernel/growth dispatch tables. Source of Orbium and zoo creatures used in proto/."
+    cited_by: [explore]
+
+  # ---- Lenia variants extending the substrate ----
+  - key: davis-2022-glaberish
+    title: "Glaberish: Generalizing the Continuously-Valued Lenia Framework to Arbitrary Composition Rules"
+    authors: "Davis, Q. T., Bongard, J."
+    year: 2022
+    url: "https://arxiv.org/abs/2205.10463"
+    type: paper
+    finding: "Decouples kernel from growth; reveals new families of life-like patterns outside Lenia's search space."
+    cited_by: [explore]
+
+  - key: plantec-2022-flow-lenia
+    title: "Flow-Lenia: Towards Open-Ended Evolution in Cellular Automata through Mass Conservation and Parameter Localization"
+    authors: "Plantec, E., Hamon, G., Etcheverry, M., Oudeyer, P.-Y., Moulin-Frier, C., Chan, B. W.-C."
+    year: 2022
+    url: "https://arxiv.org/abs/2212.07906"
+    type: paper
+    finding: "Mass-conservative Lenia variant where rule parameters live in the field itself, enabling multi-species coexistence and locally-coherent rule mixing. ALife 2023 Best Paper."
+    cited_by: [explore]
+
+  - key: mordvintsev-2022-particle-lenia
+    title: "Particle Lenia and the energy-based formulation"
+    authors: "Mordvintsev, A., Niklasson, E., Randazzo, E."
+    year: 2022
+    url: "https://google-research.github.io/self-organising-systems/particle-lenia/"
+    type: paper
+    finding: "Reformulates Lenia as a particle system following the negative gradient of a global energy; differentiable end-to-end; gives a clean variational perspective on soliton stability."
+    cited_by: [explore]
+
+  - key: kojima-2023-asymptotic-lenia-rd
+    title: "Implementation of Lenia as a Reaction-Diffusion System"
+    authors: "Kojima, H."
+    year: 2023
+    url: "https://arxiv.org/abs/2305.13784"
+    type: paper
+    finding: "Shows asymptotic Lenia is a reaction-diffusion PDE — opens classical dynamical-systems tools (attractors, Lyapunov exponents, fractal dimension) to the Lenia substrate."
+    cited_by: [explore]
+
+  - key: kojima-2025-glider-equation
+    title: "The Glider Equation for Asymptotic Lenia"
+    authors: "Kojima, H., Yevenko, I., Ikegami, T."
+    year: 2025
+    url: "https://arxiv.org/abs/2508.04167"
+    type: paper
+    finding: "Velocity-free PDE equation characterizing Lenia gliders; gradient descent on this equation discovers novel gliders (including faster ones) than discrete search; bridges Lenia and neural-field models."
+    cited_by: [explore]
+
+  # ---- Search / diversity / curiosity over Lenia ----
+  - key: kumar-2024-asal
+    title: "Automating the Search for Artificial Life with Foundation Models"
+    authors: "Kumar, A., Lu, C., Kirsch, L., Tang, Y., Stanley, K. O., Isola, P., Ha, D."
+    year: 2024
+    url: "https://arxiv.org/abs/2412.17799"
+    type: paper
+    finding: "CLIP-as-judge for ALife. 3 objectives (supervised, open-endedness, illumination) × 3 search algos (Sep-CMA-ES, GA, brute force) × 7 substrates."
+    cited_by: [explore]
+
+  - key: reinke-2020-imgep-lenia
+    title: "Intrinsically Motivated Discovery of Diverse Patterns in Self-Organizing Systems"
+    authors: "Reinke, C., Etcheverry, M., Oudeyer, P.-Y."
+    year: 2020
+    url: "https://arxiv.org/abs/1908.06769"
+    type: paper
+    finding: "IMGEP (Intrinsically Motivated Goal Exploration Processes) on Lenia: a curiosity-driven, foundation-model-free alternative to ASAL's CLIP signal. Predates ASAL by 4 years. ICLR 2020."
+    cited_by: [explore]
+
+  - key: hamon-2024-sensorimotor
+    title: "Discovering Sensorimotor Agency in Cellular Automata using Diversity Search"
+    authors: "Hamon, G., Etcheverry, M., Chan, B. W.-C., Moulin-Frier, C., Oudeyer, P.-Y."
+    year: 2024
+    url: "https://arxiv.org/abs/2402.10236"
+    type: paper
+    finding: "Discovers Lenia creatures that navigate fields of obstacles robustly. Operationalizes 'agency' as a perturbation-response diversity signal — another non-FM evaluator with empirical traction. Science Advances 2024."
+    cited_by: [explore]
+
+  - key: schulze-2025-curiosity-flow-lenia
+    title: "Exploring Flow-Lenia Universes with a Curiosity-driven AI Scientist: Discovering Diverse Ecosystem Dynamics"
+    authors: "Schulze, A. et al."
+    year: 2025
+    url: "https://arxiv.org/abs/2505.15998"
+    type: paper
+    finding: "Combines IMGEP + simulation-wide metrics (evolutionary activity, compression complexity, multi-scale entropy) to explore Flow-Lenia ecosystems. ALife 2025."
+    cited_by: [explore]
+
+  # ---- Trainable / Neural CA ----
+  - key: mordvintsev-2020-growing-nca
+    title: "Growing Neural Cellular Automata"
+    authors: "Mordvintsev, A., Randazzo, E., Niklasson, E., Levin, M."
+    year: 2020
+    url: "https://distill.pub/2020/growing-ca/"
+    type: paper
+    finding: "End-to-end differentiable CA trained to grow a target image from a seed; 1×1 conv + ReLU pointwise rule. Robust to local damage; the canonical 'learnable Lenia'."
+    cited_by: [explore]
+
+  - key: randazzo-2020-self-classifying-nca
+    title: "Self-classifying MNIST Digits"
+    authors: "Randazzo, E., Mordvintsev, A., Niklasson, E., Levin, M., Greydanus, S."
+    year: 2020
+    url: "https://distill.pub/2020/selforg/mnist/"
+    type: paper
+    finding: "NCA that classifies MNIST through local message-passing only — no global pooling. 22 k params. First demonstration of NCA-as-classifier."
+    cited_by: [explore]
+
+  - key: bena-2025-universal-nca
+    title: "A Path to Universal Neural Cellular Automata"
+    authors: "Béna, G., Faldor, M., Goodman, D. F. M., Cully, A."
+    year: 2025
+    url: "https://arxiv.org/abs/2505.13058"
+    type: paper
+    finding: "Trains NCA via gradient descent to perform matrix multiplication, matrix transpose, and EMULATE a neural network solving MNIST — all within the CA state. Headline precedent for 'NCA as computation'. GECCO 2025."
+    cited_by: [explore]
+
+  - key: xu-2025-nca-arc-agi
+    title: "Neural Cellular Automata for ARC-AGI"
+    authors: "Xu, K., Miikkulainen, R."
+    year: 2025
+    url: "https://nn.cs.utexas.edu/downloads/papers/xu.alife25.pdf"
+    type: paper
+    finding: "Applies NCA to the ARC-AGI reasoning benchmark — first NCA attack on an explicit symbolic-reasoning task. ALife 2025."
+    cited_by: [explore]
+
+  # ---- Reservoir computing & edge-of-chaos in CA ----
+  - key: yilmaz-2014-reservoir-ca
+    title: "Reservoir Computing using Cellular Automata"
+    authors: "Yilmaz, O."
+    year: 2014
+    url: "https://arxiv.org/abs/1410.0162"
+    type: paper
+    finding: "CA as reservoir for echo-state-network-style computation. Rule 110 etc. exploit edge-of-chaos for high computational capacity."
+    cited_by: [explore]
+
+  - key: carroll-2020-eoc-reservoir
+    title: "Do Reservoir Computers Work Best at the Edge of Chaos?"
+    authors: "Carroll, T. L."
+    year: 2020
+    url: "https://arxiv.org/abs/2012.01409"
+    type: paper
+    finding: "Empirically tests edge-of-chaos hypothesis for RC. Mixed evidence — but the question 'is Lenia at the edge of chaos?' is the right physics framing for our diagnostic vector."
+    cited_by: [explore]
+
+  # ---- Neural-field / continuous attractor bridge ----
+  - key: amari-1977-neural-field
+    title: "Dynamics of Pattern Formation in Lateral-Inhibition Type Neural Fields"
+    authors: "Amari, S."
+    year: 1977
+    url: "https://link.springer.com/article/10.1007/BF00337259"
+    type: paper
+    finding: "Foundational neural-field model: ∂_t u = -u + ∫ w(x-y) f(u(y)) dy + I. Structurally identical to asymptotic Lenia after relabeling. Bump attractors = solitons."
+    cited_by: [explore]
+
+  - key: wilson-cowan-1972
+    title: "Excitatory and Inhibitory Interactions in Localized Populations of Model Neurons"
+    authors: "Wilson, H. R., Cowan, J. D."
+    year: 1972
+    url: "https://www.cell.com/biophysj/fulltext/S0006-3495(72)86068-5"
+    type: paper
+    finding: "Continuous-population neural dynamics with excitatory + inhibitory channels — multichannel Lenia of the brain. Mathematical scaffold for neural-field cousin of Lenia."
     cited_by: [explore]
