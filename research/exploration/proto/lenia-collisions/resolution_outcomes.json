@@ -1,0 +1,295 @@
+{
+  "configs": [
+    {
+      "label": "T=5  R=13 W=192",
+      "T": 5,
+      "R": 13,
+      "world": 192,
+      "scale": 1.0,
+      "elapsed": 1.4219048023223877,
+      "per_angle": {
+        "0.0": {
+          "outcome": "annihilate",
+          "initial_mass": 149.0980392156863,
+          "final_mass": 0.0,
+          "nc_initial": 1,
+          "nc_final": 0
+        },
+        "45.0": {
+          "outcome": "annihilate",
+          "initial_mass": 152.98938074682073,
+          "final_mass": 0.0,
+          "nc_initial": 1,
+          "nc_final": 0
+        },
+        "90.0": {
+          "outcome": "passthrough",
+          "initial_mass": 153.72549019607845,
+          "final_mass": 149.10088305822796,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "135.0": {
+          "outcome": "passthrough",
+          "initial_mass": 152.98938074682076,
+          "final_mass": 148.55892164686145,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "180.0": {
+          "outcome": "annihilate",
+          "initial_mass": 153.72549019607845,
+          "final_mass": 0.0,
+          "nc_initial": 2,
+          "nc_final": 0
+        },
+        "225.0": {
+          "outcome": "passthrough",
+          "initial_mass": 152.98938074682076,
+          "final_mass": 148.55721196771862,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "270.0": {
+          "outcome": "passthrough",
+          "initial_mass": 153.72549019607845,
+          "final_mass": 149.15124043546933,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "315.0": {
+          "outcome": "passthrough",
+          "initial_mass": 152.98938074682076,
+          "final_mass": 148.55721196772402,
+          "nc_initial": 2,
+          "nc_final": 2
+        }
+      }
+    },
+    {
+      "label": "T=10 R=13 W=192 (default)",
+      "T": 10,
+      "R": 13,
+      "world": 192,
+      "scale": 1.0,
+      "elapsed": 2.6863889694213867,
+      "per_angle": {
+        "0.0": {
+          "outcome": "annihilate",
+          "initial_mass": 149.0980392156863,
+          "final_mass": 0.0,
+          "nc_initial": 1,
+          "nc_final": 0
+        },
+        "45.0": {
+          "outcome": "spawn+1",
+          "initial_mass": 152.98938074682073,
+          "final_mass": 147.34053332138666,
+          "nc_initial": 1,
+          "nc_final": 2
+        },
+        "90.0": {
+          "outcome": "passthrough",
+          "initial_mass": 153.72549019607845,
+          "final_mass": 147.61628644445534,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "135.0": {
+          "outcome": "spawn+1",
+          "initial_mass": 152.98938074682076,
+          "final_mass": 147.66362981184363,
+          "nc_initial": 2,
+          "nc_final": 3
+        },
+        "180.0": {
+          "outcome": "passthrough",
+          "initial_mass": 153.72549019607845,
+          "final_mass": 147.05838484383878,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "225.0": {
+          "outcome": "passthrough",
+          "initial_mass": 152.98938074682076,
+          "final_mass": 147.66245782245716,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "270.0": {
+          "outcome": "passthrough",
+          "initial_mass": 153.72549019607845,
+          "final_mass": 150.7556130651273,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "315.0": {
+          "outcome": "spawn+1",
+          "initial_mass": 152.98938074682076,
+          "final_mass": 147.66245782245736,
+          "nc_initial": 2,
+          "nc_final": 3
+        }
+      }
+    },
+    {
+      "label": "T=20 R=13 W=192",
+      "T": 20,
+      "R": 13,
+      "world": 192,
+      "scale": 1.0,
+      "elapsed": 4.929910898208618,
+      "per_angle": {
+        "0.0": {
+          "outcome": "annihilate",
+          "initial_mass": 149.0980392156863,
+          "final_mass": 0.0,
+          "nc_initial": 1,
+          "nc_final": 0
+        },
+        "45.0": {
+          "outcome": "spawn+2",
+          "initial_mass": 152.98938074682073,
+          "final_mass": 145.92946935892687,
+          "nc_initial": 1,
+          "nc_final": 3
+        },
+        "90.0": {
+          "outcome": "passthrough",
+          "initial_mass": 153.72549019607845,
+          "final_mass": 145.96672546847327,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "135.0": {
+          "outcome": "spawn+1",
+          "initial_mass": 152.98938074682076,
+          "final_mass": 145.9605072318647,
+          "nc_initial": 2,
+          "nc_final": 3
+        },
+        "180.0": {
+          "outcome": "spawn+1",
+          "initial_mass": 153.72549019607845,
+          "final_mass": 146.88960112061739,
+          "nc_initial": 2,
+          "nc_final": 3
+        },
+        "225.0": {
+          "outcome": "passthrough",
+          "initial_mass": 152.98938074682076,
+          "final_mass": 145.9605930668916,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "270.0": {
+          "outcome": "passthrough",
+          "initial_mass": 153.72549019607845,
+          "final_mass": 144.13729541564976,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "315.0": {
+          "outcome": "spawn+1",
+          "initial_mass": 152.98938074682076,
+          "final_mass": 145.96059306689213,
+          "nc_initial": 2,
+          "nc_final": 3
+        }
+      }
+    },
+    {
+      "label": "T=10 R=26 W=384 (2x spatial)",
+      "T": 10,
+      "R": 26,
+      "world": 384,
+      "scale": 2.0,
+      "elapsed": 10.281883001327515,
+      "per_angle": {
+        "0.0": {
+          "outcome": "annihilate",
+          "initial_mass": 627.3415142256772,
+          "final_mass": 0.0,
+          "nc_initial": 1,
+          "nc_final": 0
+        },
+        "45.0": {
+          "outcome": "singleton",
+          "initial_mass": 641.5700052241257,
+          "final_mass": 294.57074637030183,
+          "nc_initial": 1,
+          "nc_final": 1
+        },
+        "90.0": {
+          "outcome": "passthrough",
+          "initial_mass": 643.2589498652846,
+          "final_mass": 589.1253905280191,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "135.0": {
+          "outcome": "spawn+1",
+          "initial_mass": 641.5700052241257,
+          "final_mass": 591.301628075287,
+          "nc_initial": 2,
+          "nc_final": 3
+        },
+        "180.0": {
+          "outcome": "passthrough",
+          "initial_mass": 643.2589498652848,
+          "final_mass": 589.6269736487118,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "225.0": {
+          "outcome": "passthrough",
+          "initial_mass": 641.5700052241257,
+          "final_mass": 589.0448640708746,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "270.0": {
+          "outcome": "passthrough",
+          "initial_mass": 643.2589498652848,
+          "final_mass": 667.4394317005019,
+          "nc_initial": 2,
+          "nc_final": 2
+        },
+        "315.0": {
+          "outcome": "spawn+1",
+          "initial_mass": 641.5700052241258,
+          "final_mass": 589.0448615717327,
+          "nc_initial": 2,
+          "nc_final": 3
+        }
+      }
+    }
+  ],
+  "agreement_matrix": [
+    [
+      8,
+      4,
+      4,
+      4
+    ],
+    [
+      4,
+      8,
+      6,
+      7
+    ],
+    [
+      4,
+      6,
+      8,
+      6
+    ],
+    [
+      4,
+      7,
+      6,
+      8
+    ]
+  ],
+  "n_angles": 8
+}
