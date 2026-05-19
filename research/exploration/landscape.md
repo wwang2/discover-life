@@ -70,7 +70,7 @@
 
 ## What Changed This Round
 - **Mental model upgrade**: Lenia ≠ just an ALife toy. Trainable Lenia (NCA) is *literally a recurrent ConvNet*, and the 2025 Béna paper shows it can be trained to emulate a NN solving MNIST inside the CA state. Asymptotic Lenia is structurally identical to Amari/Wilson-Cowan neural fields. **Lenia sits at the intersection of ALife, computational neuroscience, and deep learning** — picking a problem at that intersection is the highest-leverage move.
-- **Pole 2 (computation) committed** as the campaign direction after a fast empirical test (`proto/lenia-collisions/`). 8-angle Orbium × Orbium collision sweep: 4/8 are pass-through, 2/8 are spawn-3, 2/8 are annihilate (one of which is a placement artefact). **Vanilla Lenia already gives a 3-element collision instruction set** at 45°-angular-resolution; finer resolution and other creature pairs will likely give more.
+- **Pole 2 (computation) committed** after two empirical rounds in `proto/lenia-collisions/`. Round-1 found 3 outcome classes in vanilla Lenia at 45° resolution. Round-2 (placement fix + impact-parameter sweep + Synorbium cross-test + delta-based classifier) sharpened to **a robust, creature-portable 3-class instruction set**: at 135°, spawn+1 is stable across a 30-pixel impact-parameter window and transitions sharply to merge−1 at b ≥ +20. Synorbium reproduces passthrough and spawn+1 with slightly different boundaries.
 - **Two non-FM evaluators predate ours** (IMGEP 2020, Sensorimotor-Lenia 2024). The 5-dim vector is *not* the first non-FM evaluator on Lenia; that's a story-correction.
 - 13 new references added; 8 clusters in the concept graph.
-- `intent_confidence` 0.75 → **0.85** (Pole 2 viability empirically verified — well past the 0.70 threshold for `/init`).
+- `intent_confidence` 0.75 → 0.85 → **0.90** (Pole 2 empirically verified at two creature pairs with measurable regime boundaries — past the threshold for writing `proposed_eval.yaml`).

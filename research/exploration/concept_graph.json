@@ -43,7 +43,7 @@
     {"id": "concept-lenia-neural-field", "type": "concept", "label": "Lenia ≡ neural field (PDE limit)", "summary": "Asymptotic Lenia is reaction-diffusion → which is the Amari/Wilson-Cowan neural field equation with a custom kernel and pointwise nonlinearity. Solitons ≡ bump attractors. Math is shared.", "cluster": "neural-field", "relevance": 1.0, "intent_relevance": 1.0, "cited_by": ["explore"]},
 
     {"id": "gap-soliton-composition", "type": "gap", "label": "Compositional soliton interactions", "summary": "Lenia gliders typically merge/annihilate on collision rather than acting as a logic gate. Open question: can a parameter regime (or a trained K, G) be found where collisions are deterministic AND function-shaped? PARTIALLY ANSWERED by orbit-lenia-collisions — 4/8 sample angles pass through, 2/8 spawn-3.", "cluster": "neural-ca", "relevance": 0.95, "intent_relevance": 1.0, "cited_by": ["explore"]},
-    {"id": "orbit-lenia-collisions", "type": "method", "label": "lenia-collisions (this orbit)", "summary": "8-angle Orbium × Orbium collision sweep. 4/8 pass-through (96% mass conservation), 2/8 spawn-3 (2-in / 3-out), 2/8 annihilate. Validates Pole 2 viability in vanilla Lenia.", "cluster": "metrics-vector", "relevance": 1.0, "intent_relevance": 1.0, "cited_by": ["explore"]},
+    {"id": "orbit-lenia-collisions", "type": "method", "label": "lenia-collisions (this orbit)", "summary": "Two-round Orbium and Synorbium collision sweep with delta-based classifier. Three-class instruction set (annihilate, passthrough, spawn+1) at 45°-resolution. Spawn+1 at 135° robust across 30-px impact-parameter window, transitions to merge−1 at b=+20. Synorbium reproduces the classes with shifted boundaries — instruction set is creature-portable.", "cluster": "metrics-vector", "relevance": 1.0, "intent_relevance": 1.0, "cited_by": ["explore"]},
     {"id": "concept-collision-instruction-set", "type": "concept", "label": "Collision-outcome instruction set", "summary": "Map of (creature-A × creature-B × angle × phase × offset) → outcome-class. Vanilla Lenia already exhibits ≥3 classes (annihilate, pass-through, spawn-3). The substrate analog of a CPU's opcode table.", "cluster": "neural-ca", "relevance": 1.0, "intent_relevance": 1.0, "cited_by": ["explore"]},
     {"id": "gap-soliton-capacity", "type": "gap", "label": "Information capacity of Lenia solitons", "summary": "Bits per glider, channel capacity for soliton-based communication. No measurement in the literature.", "cluster": "neural-ca", "relevance": 0.85, "intent_relevance": 0.95, "cited_by": ["explore"]},
     {"id": "gap-vector-as-aux-loss", "type": "gap", "label": "Diagnostic vector as auxiliary loss for trained NCA", "summary": "Does forcing a trained NCA to satisfy the 5-leg gate (persistent, mass_cv, temporal, dihedral) cost or buy task accuracy? Direct test of 'lifelikeness as an inductive bias'.", "cluster": "metrics-vector", "relevance": 0.9, "intent_relevance": 1.0, "cited_by": ["explore"]}
@@ -102,9 +102,9 @@
     {"id": "metrics-vector",  "label": "Diagnostic vector (this work)",    "color": "#CCB974"}
   ],
   "meta": {
-    "generated_at": "2026-05-19T06:10:00",
+    "generated_at": "2026-05-19T06:25:00",
     "total_papers_reviewed": 18,
-    "intent_statement": "Map and exploit the collision-outcome 'instruction set' of Lenia solitons. 8-angle Orbium × Orbium prototype shows 4/8 pass-through + 2/8 spawn-3 + 2/8 annihilate — at least 3 deterministic outcome classes in vanilla Lenia, supporting Pole 2 (compositional soliton computation). 5-dim diagnostic vector remains as substrate-gate.",
-    "intent_confidence": 0.85
+    "intent_statement": "Map and exploit Lenia's collision-outcome instruction set. Empirical anchors: two rounds in proto/lenia-collisions/. 3 deterministic outcome classes (annihilate, passthrough, spawn+1) at 45°-resolution Orbium-Orbium. Spawn+1 stable across a 30-px impact-parameter window with sharp boundary at b≥+20. Synorbium-Synorbium reproduces passthrough and spawn+1 with shifted boundaries — instruction set is creature-portable. Ready to write proposed_eval.yaml.",
+    "intent_confidence": 0.90
   }
 }

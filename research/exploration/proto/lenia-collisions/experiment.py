@@ -73,28 +73,36 @@ T_COLLIDE = 10.0
 A_START = (96 - int(V_ORBIUM[1] * T_COLLIDE / 2), 96 - int(V_ORBIUM[0] * T_COLLIDE / 2))
 
 
-def b_start(angle_deg: float) -> tuple[int, int]:
+def b_start(angle_deg: float, perp_offset_px: float = 0.0, v_creature: np.ndarray = None) -> tuple[int, int]:
     """Where to place creature B so that, with its intrinsic velocity rotated
-    by angle_deg, its COM also lands near (96, 96) at t = T_COLLIDE."""
+    by angle_deg, its COM aims at (96, 96) at t = T_COLLIDE, optionally with
+    a perpendicular impact-parameter offset (relative to A's velocity)."""
+    v = v_creature if v_creature is not None else V_ORBIUM
     th = np.deg2rad(angle_deg)
     R_mat = np.array([[np.cos(th), -np.sin(th)],
                       [np.sin(th),  np.cos(th)]])
-    vB = R_mat @ V_ORBIUM
-    yB = int(96 - vB[1] * T_COLLIDE / 2)
-    xB = int(96 - vB[0] * T_COLLIDE / 2)
+    vB = R_mat @ v
+    # Perpendicular to A's velocity (V_ORBIUM): rotate by 90°.
+    perp_A = np.array([-V_ORBIUM[1], V_ORBIUM[0]]) / np.linalg.norm(V_ORBIUM)
+    yB = int(96 - vB[1] * T_COLLIDE / 2 + perp_offset_px * perp_A[1])
+    xB = int(96 - vB[0] * T_COLLIDE / 2 + perp_offset_px * perp_A[0])
     return yB, xB
 
 
+# Small default impact-parameter so the parallel-same-direction case (0°)
+# doesn't have A and B at exactly the same pixel.
+DEFAULT_PERP_OFFSET = 8.0
+
 CONFIGS = [
-    {"name": "alone",     "angle": None, "skip_B": True},          # control: no creature B
-    {"name": "0°",        "angle": 0.0},                            # parallel, same direction
-    {"name": "45°",       "angle": 45.0},
-    {"name": "90°",       "angle": 90.0},                           # perpendicular T-bone
-    {"name": "135°",      "angle": 135.0},
-    {"name": "180°",      "angle": 180.0},                          # head-on
-    {"name": "225°",      "angle": 225.0},
-    {"name": "270°",      "angle": 270.0},
-    {"name": "315°",      "angle": 315.0},
+    {"name": "alone",   "angle": None, "skip_B": True},
+    {"name": "0°",      "angle": 0.0,   "perp": DEFAULT_PERP_OFFSET},
+    {"name": "45°",     "angle": 45.0,  "perp": DEFAULT_PERP_OFFSET},
+    {"name": "90°",     "angle": 90.0,  "perp": DEFAULT_PERP_OFFSET},
+    {"name": "135°",    "angle": 135.0, "perp": DEFAULT_PERP_OFFSET},
+    {"name": "180°",    "angle": 180.0, "perp": DEFAULT_PERP_OFFSET},
+    {"name": "225°",    "angle": 225.0, "perp": DEFAULT_PERP_OFFSET},
+    {"name": "270°",    "angle": 270.0, "perp": DEFAULT_PERP_OFFSET},
+    {"name": "315°",    "angle": 315.0, "perp": DEFAULT_PERP_OFFSET},
 ]
 
 
@@ -111,28 +119,44 @@ def count_components(A: np.ndarray, threshold: float = 0.1, min_size: int = 25) 
 
 
 def classify(n_components_t: np.ndarray, mass_t: np.ndarray) -> str:
-    """Classify outcome from time-series. Looks at *late* state (last 15%)."""
+    """Classify outcome by Δ(final, initial) component count.
+
+    Looks at initial count (post-placement, before any dynamics) vs the median
+    count over the last 15% of frames. This correctly handles creatures whose
+    *own* structure has multiple connected components (e.g. Synorbium), where
+    the raw final count overstates the spawn.
+    """
     tail_len = max(1, len(n_components_t) // 7)
-    nc = int(round(np.median(n_components_t[-tail_len:])))
-    if nc == 0:
+    final_nc = int(round(np.median(n_components_t[-tail_len:])))
+    initial_nc = int(n_components_t[0]) if len(n_components_t) > 0 else 0
+    if final_nc == 0:
         return "annihilate"
-    if nc == 1:
-        # Single component at end. Was there ever a 2nd? If yes → merge, else → singleton
-        return "merge" if n_components_t.max() >= 2 else "singleton"
-    if nc == 2:
-        return "passthrough"
-    return f"spawn-{nc}"
+    if final_nc == initial_nc:
+        return "passthrough" if initial_nc >= 2 else "singleton"
+    if final_nc > initial_nc:
+        return f"spawn+{final_nc - initial_nc}"
+    return f"merge-{initial_nc - final_nc}"
 
 
 def run_config(config: dict) -> dict:
+    # Per-config substrate (params + creature pattern) — defaults to Orbium.
+    params = config.get("params", ORBIUM_PARAMS)
+    pattern_A = config.get("pattern_A", ORBIUM_PATTERN)
+    pattern_B = config.get("pattern_B", pattern_A)
+    v_creature = config.get("v_creature", V_ORBIUM)
+
     A0 = np.zeros((WORLD, WORLD))
-    A0 = place_pattern(A0, ORBIUM_PATTERN, A_START, angle_deg=0.0)
+    A0 = place_pattern(A0, pattern_A, A_START, angle_deg=0.0)
     if not config.get("skip_B"):
-        B_pos = b_start(config["angle"])
-        A0 = place_pattern(A0, ORBIUM_PATTERN, B_pos, angle_deg=config["angle"])
+        B_pos = b_start(
+            config["angle"],
+            perp_offset_px=config.get("perp", 0.0),
+            v_creature=v_creature,
+        )
+        A0 = place_pattern(A0, pattern_B, B_pos, angle_deg=config["angle"])
 
     t0 = time.time()
-    sim = simulate_field(A0, ORBIUM_PARAMS, steps=STEPS, keep_every=1)
+    sim = simulate_field(A0, params, steps=STEPS, keep_every=1)
     elapsed = time.time() - t0
 
     nc_t = np.array([count_components(f)[0] for f in sim.frames])
@@ -173,12 +197,19 @@ plt.rcParams.update({
 })
 
 OUTCOME_COLOR = {
-    "annihilate": "#C44E52",  # red
-    "merge":      "#DD8452",  # orange
-    "singleton":  "#888888",  # gray (no collision)
-    "passthrough": "#55A868", # green
-    "spawn-3":    "#4C72B0",
-    "spawn-4":    "#4C72B0",
+    "annihilate":  "#C44E52",  # red
+    "merge-1":     "#DD8452",  # orange (lost 1 component on collision)
+    "merge-2":     "#B85040",
+    "merge":       "#DD8452",  # back-compat
+    "singleton":   "#888888",  # gray (no collision)
+    "passthrough": "#55A868",  # green
+    "spawn+1":     "#4C72B0",  # blue
+    "spawn+2":     "#3A5D8F",
+    "spawn+3":     "#2A4470",
+    # Back-compat aliases for older runs
+    "spawn-3":     "#4C72B0",
+    "spawn-4":     "#4C72B0",
+    "spawn-5":     "#3A5D8F",
 }
 
 
@@ -244,6 +275,48 @@ def make_diagnostics(results: list[dict], path: Path) -> None:
     plt.close(fig)
 
 
+def make_strip(results: list[dict], path: Path, suptitle: str) -> None:
+    """Generic strip layout — useful for phase sweeps and cross-creature where
+    the configs don't have the specific names that make_summary expects."""
+    n = len(results)
+    fig = plt.figure(figsize=(3 + 2.0 * n, 8), constrained_layout=True)
+    gs = gridspec.GridSpec(3, n, figure=fig, height_ratios=[1.4, 1.0, 1.0])
+
+    for i, r in enumerate(results):
+        ax = fig.add_subplot(gs[0, i])
+        ax.imshow(r["sim"].frames[-1], cmap="magma", vmin=0, vmax=1)
+        color = OUTCOME_COLOR.get(r["outcome"], "#000000")
+        ax.set_title(f"{r['name']}\n{r['outcome']}", fontsize=10, color=color, fontweight="bold")
+        ax.grid(False)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        for spine in ax.spines.values():
+            spine.set_color(color)
+            spine.set_linewidth(1.6)
+
+    ax_m = fig.add_subplot(gs[1, :])
+    ax_n = fig.add_subplot(gs[2, :])
+    for r in results:
+        sim = r["sim"]
+        t = np.arange(len(sim.mass)) / ORBIUM_PARAMS["T"]  # all in Lenia-uni assumes shared T
+        color = OUTCOME_COLOR.get(r["outcome"], "#000000")
+        ax_m.plot(t, sim.mass, color=color, lw=1.3, alpha=0.85, label=r["name"])
+        ax_n.plot(t, r["nc_t"], color=color, lw=1.3, alpha=0.85, label=r["name"])
+    ax_m.set_xlabel("time (Lenia units)")
+    ax_m.set_ylabel("total mass")
+    ax_m.set_title("mass over time")
+    ax_m.legend(loc="best", ncol=min(3, len(results)), fontsize=8)
+    ax_n.set_xlabel("time (Lenia units)")
+    ax_n.set_ylabel("# components (≥25 px)")
+    ax_n.set_title("component count over time")
+    ax_n.set_yticks([0, 1, 2, 3, 4])
+    ax_n.legend(loc="best", ncol=min(3, len(results)), fontsize=8)
+
+    fig.suptitle(suptitle, fontsize=13, fontweight="medium")
+    fig.savefig(path, bbox_inches="tight")
+    plt.close(fig)
+
+
 def make_summary(results: list[dict], path: Path) -> None:
     """Single-page summary: phase-wheel + 4 representative snapshots + 2 time series."""
     fig = plt.figure(figsize=(15, 11), constrained_layout=True)
@@ -269,16 +342,16 @@ def make_summary(results: list[dict], path: Path) -> None:
     ax_w.grid(False)
     ax_w.set_title("(a) outcome by incoming angle of B", fontsize=11, pad=15)
 
-    # 3 representative collisions: head-on (annihilate), 90° (passthrough), 135° (spawn-3)
-    picks = [("180°", "head-on → annihilate"),
-             ("90°",  "T-bone → pass-through"),
-             ("135°", "→ spawn-3")]
+    # 3 representative collisions — caption derived from actual outcome.
     by_name = {r["name"]: r for r in results}
-    for j, (name, caption) in enumerate(picks, start=1):
+    picks = ["180°", "90°", "135°"]
+    descriptors = {"180°": "head-on", "90°": "T-bone", "135°": "diagonal"}
+    for j, name in enumerate(picks, start=1):
         r = by_name[name]
         ax = fig.add_subplot(gs[0, j])
         ax.imshow(r["sim"].frames[-1], cmap="magma", vmin=0, vmax=1)
         color = OUTCOME_COLOR.get(r["outcome"], "#000000")
+        caption = f"{descriptors[name]} → {r['outcome']}"
         ax.set_title(f"({chr(97+j)}) {caption}", fontsize=10, color=color, fontweight="bold")
         ax.grid(False)
         ax.set_xticks([])
@@ -339,8 +412,8 @@ def make_summary(results: list[dict], path: Path) -> None:
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    print(f"[lenia-collisions] running {len(CONFIGS)} configs, "
-          f"world={WORLD}×{WORLD}, steps={STEPS}")
+    # ---- Run the main 8-angle sweep with placement fix ----
+    print(f"[lenia-collisions] (1) 8-angle sweep — world {WORLD}×{WORLD}, perp_offset={DEFAULT_PERP_OFFSET}px")
     results = []
     for cfg in CONFIGS:
         r = run_config(cfg)
@@ -350,21 +423,63 @@ if __name__ == "__main__":
               f"mass {r['initial_mass']:6.2f} → {r['final_mass']:6.2f}  "
               f"({r['elapsed']:.2f}s)")
 
+    # ---- (2) Impact-parameter sweep at 135° ----
+    print(f"\n[lenia-collisions] (2) impact-parameter sweep at 135°")
+    phase_results = []
+    for b_perp in [-20.0, -10.0, 0.0, 10.0, 20.0]:
+        cfg = {"name": f"135° b={b_perp:+.0f}", "angle": 135.0, "perp": b_perp}
+        r = run_config(cfg)
+        phase_results.append(r)
+        print(f"  b={b_perp:+5.1f}  outcome={r['outcome']:12s}  "
+              f"mass {r['initial_mass']:6.2f} → {r['final_mass']:6.2f}  "
+              f"({r['elapsed']:.2f}s)")
+
+    # ---- (3) Cross-creature: Synorbium pairs ----
+    creatures_zoo = json.loads((HERE.parent / "lenia-zoo" / "creatures.json").read_text())
+    syn = creatures_zoo["O4s"]
+    syn_pattern = decode_rle_2d(syn["cells"])
+    syn_params = {"R": syn["params"]["R"], "T": syn["params"]["T"],
+                  "m": syn["params"]["m"], "s": syn["params"]["s"]}
+    # Synorbium speed ≈ 6.40 px/u from zoo. Assume same direction as Orbium for now;
+    # the substrate-internal placement will let it drift to wherever it goes.
+    # (Synorbium also moves down-right based on the zoo snapshot.)
+    v_syn = V_ORBIUM * (6.40 / 6.25)
+
+    print(f"\n[lenia-collisions] (3) Synorbium × Synorbium")
+    cross_results = []
+    for angle in [90.0, 135.0]:
+        cfg = {
+            "name": f"Syn {angle:.0f}°", "angle": angle, "perp": DEFAULT_PERP_OFFSET,
+            "params": syn_params, "pattern_A": syn_pattern, "pattern_B": syn_pattern,
+            "v_creature": v_syn,
+        }
+        r = run_config(cfg)
+        cross_results.append(r)
+        print(f"  {r['name']:10s}  outcome={r['outcome']:12s}  "
+              f"mass {r['initial_mass']:6.2f} → {r['final_mass']:6.2f}  "
+              f"({r['elapsed']:.2f}s)")
+
     print("\n[lenia-collisions] rendering figures ...")
     make_figure(results, FIG_DIR / "results.png")
     make_diagnostics(results, FIG_DIR / "diagnostics.png")
     make_summary(results, FIG_DIR / "summary.png")
+    make_strip(phase_results, FIG_DIR / "summary_phase.png",
+               "Impact-parameter sweep at 135° — is spawn-3 robust to alignment?")
+    make_strip(cross_results, FIG_DIR / "summary_synorbium.png",
+               "Synorbium × Synorbium — non-trivial outcomes aren't Orbium-only")
 
-    # Save summary
-    summary = {
-        r["name"]: {
-            "angle": r["angle"],
-            "outcome": r["outcome"],
-            "initial_mass": r["initial_mass"],
-            "final_mass": r["final_mass"],
-            "mass_fraction": r["final_mass"] / r["initial_mass"] if r["initial_mass"] > 0 else 0.0,
-        }
-        for r in results
+    # Persist a combined summary
+    all_outcomes = {
+        "main": {r["name"]: {"angle": r["angle"], "outcome": r["outcome"],
+                              "mass_fraction": r["final_mass"] / r["initial_mass"] if r["initial_mass"] > 0 else 0.0}
+                 for r in results},
+        "phase_sweep_135": {r["name"]: {"outcome": r["outcome"],
+                                          "mass_fraction": r["final_mass"] / r["initial_mass"] if r["initial_mass"] > 0 else 0.0}
+                            for r in phase_results},
+        "synorbium": {r["name"]: {"outcome": r["outcome"],
+                                    "mass_fraction": r["final_mass"] / r["initial_mass"] if r["initial_mass"] > 0 else 0.0}
+                       for r in cross_results},
     }
-    (HERE / "outcomes.json").write_text(json.dumps(summary, indent=2))
+    (HERE / "outcomes.json").write_text(json.dumps(all_outcomes, indent=2))
+
     print("[lenia-collisions] done.")
