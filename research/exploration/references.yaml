@@ -193,3 +193,58 @@ references:
     type: paper
     finding: "Continuous-population neural dynamics with excitatory + inhibitory channels — multichannel Lenia of the brain. Mathematical scaffold for neural-field cousin of Lenia."
     cited_by: [explore]
+
+  # ---- Dissipative solitons & mass-conserving CAs (the established parent lit) ----
+  - key: purwins-2010-dissipative-solitons
+    title: "Dissipative Solitons in Reaction-Diffusion Systems: Mechanisms, Dynamics, Interaction"
+    authors: "Purwins, H.-G., Bödeker, H. U., Liehr, A."
+    year: 2010
+    url: "https://link.springer.com/book/10.1007/978-3-642-31251-9"
+    type: book
+    finding: "Canonical reference for dissipative solitons in reaction-diffusion systems. Defines and classifies the particle-like behaviors (generation, annihilation, reflection, scattering, bound states) we are rediscovering in Lenia collisions. Since asymptotic Lenia ≡ RD system (Kojima 2023), this is the parent literature for our Pole-2 work."
+    cited_by: [explore]
+
+  - key: bode-2002-dissipative-soliton-interactions
+    title: "Interaction of Dissipative Solitons: Particle-like Behaviour of Localized Structures in a Three-Component Reaction-Diffusion System"
+    authors: "Bode, M., Liehr, A. W., Schenk, C. P., Purwins, H.-G."
+    year: 2002
+    url: "https://www.sciencedirect.com/science/article/abs/pii/S0167278901003608"
+    type: paper
+    finding: "Direct precedent for collision-outcome studies in 3-component RD systems. Reports scattering, generation, annihilation, bound-state formation as a function of incoming angle / impact parameter — the same phenomenology we observe in `proto/lenia-collisions/`."
+    cited_by: [explore]
+
+  - key: wuensche-2018-glider-dissipative
+    title: "Pulsing Dynamics in Randomly Wired Glider Cellular Automata"
+    authors: "Wuensche, A., Coxon, A."
+    year: 2018
+    url: "https://arxiv.org/abs/1806.06416"
+    type: paper
+    finding: "Frames CA gliders as discrete analogs of Prigogine's far-from-equilibrium dissipative structures. Connects glider dynamics to Wolfram's class 4, edge-of-chaos, and computation."
+    cited_by: [explore]
+
+  - key: davis-2024-non-platonic-autopoiesis
+    title: "Non-Platonic Autopoiesis of a Cellular Automaton Glider in Asymptotic Lenia"
+    authors: "Davis, Q. T."
+    year: 2024
+    url: "https://arxiv.org/abs/2407.21086"
+    type: paper
+    finding: "Demonstrates that Asymptotic Lenia glider autopoietic competence is resolution-dependent — gliders maintain morphology only at specific simulation coarseness. Autopoietic framing (Maturana/Varela) is complementary to the dissipative-structure framing. A cautionary finding for any Pole 2 simulation: instruction set may depend on grid/dt resolution."
+    cited_by: [explore]
+
+  - key: glover-2022-life-like-halting
+    title: "Selecting Continuous Life-Like Cellular Automata for Halting Unpredictability: Evolving for Abiogenesis"
+    authors: "Glover, T. J., Lessin, D., Yaeger, L. S."
+    year: 2022
+    url: "https://arxiv.org/abs/2204.07541"
+    type: paper
+    finding: "Evolves continuous CA for mobility + conservation of mean cell value. Re-discovers gliders in 17/17 Lenia CAs; reports 4 new evolved CAs with novel glider patterns. Validates 'mobility + quasi-conservation' as a search objective — close to our 5-leg substrate gate."
+    cited_by: [explore]
+
+  - key: papadopoulos-2025-mace
+    title: "MaCE: General Mass Conserving Dynamics for Cellular Automata"
+    authors: "Papadopoulos, V., Guichard, E."
+    year: 2025
+    url: "https://arxiv.org/abs/2507.12306"
+    type: paper
+    finding: "General mass-conservation rule attachable to existing CAs (continuous + discrete). When applied to Lenia, produces 'abundant solitons and potential intrinsic evolution in resource-constrained settings' — suggests mass conservation does not *necessarily* kill translation (vs. Flow-Lenia at Chan's params). Worth investigating whether MaCE preserves the collision instruction set."
+    cited_by: [explore]
